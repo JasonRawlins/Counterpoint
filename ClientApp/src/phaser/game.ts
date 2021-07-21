@@ -1,7 +1,5 @@
 import Phaser from "phaser";
 
-
-
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: false,
     visible: false,
@@ -38,9 +36,9 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
             debug: true
         }
     },
-    parent: "game",
+    parent: "phaser",
     backgroundColor: "#ebd5b3",
     scene: GameScene
 };
 
-export const game = new Phaser.Game(gameConfig);
+export const Game = new Phaser.Game(gameConfig);

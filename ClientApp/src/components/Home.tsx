@@ -1,7 +1,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { Game } from "../phaser/game";
+
+const x = Game.scene.isActive; // Hack to get phaser script onto page.
 
 const Home = () => (
+
     <div>
         <h1>Hello, world!</h1>
         <p>Welcome to your new single-page application, built with:</p>
