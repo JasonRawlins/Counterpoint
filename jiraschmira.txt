@@ -1,0 +1,7 @@
+﻿Backlog
+-------
+
+
+Current
+-------
+Render a note (svg?) on screen

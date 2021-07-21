@@ -45,7 +45,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\src\assets\" />
     <Folder Include="Data\" />
   </ItemGroup>
 
