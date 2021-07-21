@@ -7,8 +7,6 @@ import { ConnectedRouter } from 'connected-react-router';
 import { createBrowserHistory } from 'history';
 import configureStore from './store/configureStore';
 import registerServiceWorker from './registerServiceWorker';
-import Phaser from "phaser";
-import PlayGame from "./components/phaser/Phaser";
 import App from './App';
 
 // Create browser history to use in the Redux store
@@ -17,16 +15,6 @@ const history = createBrowserHistory({ basename: baseUrl });
 
 // Get the application-wide store instance, prepopulating with state from the server where available.
 const store = configureStore(history);
-
-export const config = {
-    type: Phaser.AUTO,
-    parent: "phaser",
-    width: 800,
-    height: 600,
-    scene: PlayGame
-};
-
-const game = new Phaser.Game(config);
 
 ReactDOM.render(
     <Provider store={store}>
