@@ -1,0 +1,62 @@
+{
+	"textures": [
+		{
+			"image": "musical-symbols.png",
+			"format": "RGBA8888",
+			"size": {
+				"w": 38,
+				"h": 108
+			},
+			"scale": 1,
+			"frames": [
+				{
+					"filename": "whole-note.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 36,
+						"h": 24
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 36,
+						"h": 24
+					},
+					"frame": {
+						"x": 1,
+						"y": 1,
+						"w": 36,
+						"h": 24
+					}
+				},
+				{
+					"filename": "quater-note.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 28,
+						"h": 80
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 28,
+						"h": 80
+					},
+					"frame": {
+						"x": 1,
+						"y": 27,
+						"w": 28,
+						"h": 80
+					}
+				}
+			]
+		}
+	],
+	"meta": {
+		"app": "https://www.codeandweb.com/texturepacker",
+		"version": "3.0",
+		"smartupdate": "$TexturePacker:SmartUpdate:58d24da2d4210817751a5789d67fbd15:1a94c018015e265f0dee3d3935c9cacc:3e154cf9e9e8a312306f5b6c518e3b5b$"
+	}
+}

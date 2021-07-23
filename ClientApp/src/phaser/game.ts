@@ -14,36 +14,14 @@ export class GameScene extends Phaser.Scene {
     }
 
     public preload() {
-        this.load.svg("whole-note", "public/assets/whole-note.svg");
-        this.load.image("logo", "public/images/logo.png");
+        this.load.multiatlas("musical-symbols", "assets/musical-symbols.json", "assets");
     }
 
     public create() {
-        this.square = this.add.rectangle(400, 400, 100, 100, 0xFFFFFF) as any;
-        this.physics.add.existing(this.square);
-
-        this.add.image(100, 100, "whole-note");
-        this.add.image(200, 200, "logo");
+        this.add.image(0, 0, "musical-symbols", "whole-note.png").setOrigin(0);
     }
 
     public update() {
-        const cursorKeys = this.input.keyboard.createCursorKeys();
-
-        if (cursorKeys.up.isDown) {
-            this.square.body.setVelocityY(-500);
-        } else if (cursorKeys.down.isDown) {
-            this.square.body.setVelocityY(500);
-        } else {
-            this.square.body.setVelocityY(0);
-        }
-
-        if (cursorKeys.right.isDown) {
-            this.square.body.setVelocityX(500);
-        } else if (cursorKeys.left.isDown) {
-            this.square.body.setVelocityX(-500);
-        } else {
-            this.square.body.setVelocityX(0);
-        }
     }
 }
 
