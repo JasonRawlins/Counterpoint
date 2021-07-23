@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-let feedbackText = "";
+let feedbackText: Phaser.GameObjects.Text;
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: false,
@@ -20,12 +20,19 @@ export class GameScene extends Phaser.Scene {
     }
 
     public create() {
-        this.add.image(0, 0, "musical-symbols", "whole-note.png").setOrigin(0);
+        const wholeNoteImage = this.add.image(0, 0, "musical-symbols", "whole-note.png").setOrigin(0);
+        wholeNoteImage.setInteractive();
+        this.input.on("gameobjectdown", this.onObjectClicked);
+        feedbackText = this.add.text(0, 200, "Feedback");
         //this.add.image(0, 20, "musical-symbols", "treble-clef.png").setOrigin(0);
         //this.add.image(0, 120, "musical-symbols", "bass-clef.png").setOrigin(0);
     }
 
     public update() {
+    }
+
+    public onObjectClicked(event: string | symbol, gameObject: Phaser.GameObjects.Image) {
+        feedbackText.text = "Clicked";
     }
 }
 
