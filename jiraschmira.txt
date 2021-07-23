@@ -4,9 +4,14 @@
 
 Current
 -------
-Clicking on a symbol displays the symbols name (via event)
+Display the five staff lines
+Display grand staff
+Display clefs
+
 
 
 Done
 ----
 Render a note on screen
+Clicking on a symbol displays a message. 
+Handle hover event for game objects. 

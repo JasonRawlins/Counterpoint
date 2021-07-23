@@ -22,8 +22,11 @@ export class GameScene extends Phaser.Scene {
     public create() {
         const wholeNoteImage = this.add.image(0, 0, "musical-symbols", "whole-note.png").setOrigin(0);
         wholeNoteImage.setInteractive();
-        this.input.on("gameobjectdown", this.onObjectClicked);
-        feedbackText = this.add.text(0, 200, "Feedback");
+        wholeNoteImage.setData("name", "Whole note");
+        this.input.on("pointerover", (event: string | symbol, gameObject: Phaser.GameObjects.Image[]) => {
+            feedbackText.text = gameObject[0].getData("name");
+        });
+        feedbackText = this.add.text(0, 250, "Feedback");
         //this.add.image(0, 20, "musical-symbols", "treble-clef.png").setOrigin(0);
         //this.add.image(0, 120, "musical-symbols", "bass-clef.png").setOrigin(0);
     }
