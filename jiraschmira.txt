@@ -4,4 +4,9 @@
 
 Current
 -------
-Render a note (svg?) on screen
+Clicking on a symbol displays the symbols name (via event)
+
+
+Done
+----
+Render a note on screen

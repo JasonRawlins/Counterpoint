@@ -1,5 +1,7 @@
 import Phaser from "phaser";
 
+let feedbackText = "";
+
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: false,
     visible: false,
@@ -19,6 +21,8 @@ export class GameScene extends Phaser.Scene {
 
     public create() {
         this.add.image(0, 0, "musical-symbols", "whole-note.png").setOrigin(0);
+        //this.add.image(0, 20, "musical-symbols", "treble-clef.png").setOrigin(0);
+        //this.add.image(0, 120, "musical-symbols", "bass-clef.png").setOrigin(0);
     }
 
     public update() {

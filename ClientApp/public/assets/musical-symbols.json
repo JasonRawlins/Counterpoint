@@ -4,51 +4,156 @@
 			"image": "musical-symbols.png",
 			"format": "RGBA8888",
 			"size": {
-				"w": 38,
-				"h": 108
+				"w": 102,
+				"h": 140
 			},
 			"scale": 1,
 			"frames": [
 				{
-					"filename": "whole-note.png",
+					"filename": "treble-clef.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
-						"w": 36,
-						"h": 24
+						"w": 31,
+						"h": 82
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 36,
-						"h": 24
+						"w": 31,
+						"h": 82
 					},
 					"frame": {
 						"x": 1,
 						"y": 1,
-						"w": 36,
-						"h": 24
+						"w": 31,
+						"h": 82
 					}
 				},
 				{
 					"filename": "quater-note.png",
 					"rotated": false,
+					"trimmed": true,
+					"sourceSize": {
+						"w": 100,
+						"h": 100
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 22,
+						"w": 100,
+						"h": 54
+					},
+					"frame": {
+						"x": 1,
+						"y": 85,
+						"w": 100,
+						"h": 54
+					}
+				},
+				{
+					"filename": "bass-clef.png",
+					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
-						"w": 28,
-						"h": 80
+						"w": 33,
+						"h": 38
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 28,
-						"h": 80
+						"w": 33,
+						"h": 38
 					},
 					"frame": {
-						"x": 1,
-						"y": 27,
-						"w": 28,
-						"h": 80
+						"x": 34,
+						"y": 1,
+						"w": 33,
+						"h": 38
+					}
+				},
+				{
+					"filename": "alto-clef.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 32,
+						"h": 52
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 32,
+						"h": 52
+					},
+					"frame": {
+						"x": 69,
+						"y": 1,
+						"w": 32,
+						"h": 52
+					}
+				},
+				{
+					"filename": "common-time.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 21,
+						"h": 25
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 21,
+						"h": 25
+					},
+					"frame": {
+						"x": 34,
+						"y": 41,
+						"w": 21,
+						"h": 25
+					}
+				},
+				{
+					"filename": "whole-note.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 21,
+						"h": 12
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 21,
+						"h": 12
+					},
+					"frame": {
+						"x": 57,
+						"y": 55,
+						"w": 21,
+						"h": 12
+					}
+				},
+				{
+					"filename": "whole-rest.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 14,
+						"h": 5
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 14,
+						"h": 5
+					},
+					"frame": {
+						"x": 34,
+						"y": 68,
+						"w": 14,
+						"h": 5
 					}
 				}
 			]
@@ -57,6 +162,6 @@
 	"meta": {
 		"app": "https://www.codeandweb.com/texturepacker",
 		"version": "3.0",
-		"smartupdate": "$TexturePacker:SmartUpdate:58d24da2d4210817751a5789d67fbd15:1a94c018015e265f0dee3d3935c9cacc:3e154cf9e9e8a312306f5b6c518e3b5b$"
+		"smartupdate": "$TexturePacker:SmartUpdate:6e3ba23b4f3fe34f705752b94ffd75a2:83fd927036625fc5b2f9b4f485789500:3e154cf9e9e8a312306f5b6c518e3b5b$"
 	}
 }
