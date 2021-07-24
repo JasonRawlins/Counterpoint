@@ -26,6 +26,9 @@ export class GameScene extends Phaser.Scene {
         this.input.on("pointerover", (event: string | symbol, gameObject: Phaser.GameObjects.Image[]) => {
             feedbackText.text = gameObject[0].getData("name");
         });
+
+        const eLine = this.add.line(0, 0, 0, 50, 300, 50, 0x000000);
+
         feedbackText = this.add.text(0, 250, "Feedback");
         //this.add.image(0, 20, "musical-symbols", "treble-clef.png").setOrigin(0);
         //this.add.image(0, 120, "musical-symbols", "bass-clef.png").setOrigin(0);
