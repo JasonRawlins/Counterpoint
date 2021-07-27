@@ -4,9 +4,8 @@
 
 Current
 -------
-Display clefs
-Display a note
-Use % for all measurements
+Manage camera zoom settings so they are more smooth. 
+
 
 
 Done
@@ -16,3 +15,4 @@ Clicking on a symbol displays a message.
 Handle hover event for game objects. 
 Display the five staff lines
 Display grand staff
+Enable camera zoom

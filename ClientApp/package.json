@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@types/dat.gui": "^0.7.7",
     "bootstrap": "^4.3.1",
     "connected-react-router": "6.5.2",
+    "dat.gui": "^0.7.7",
     "history": "4.10.1",
     "jquery": "^3.5.1",
     "merge": "1.2.1",

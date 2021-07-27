@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import * as dat from "dat.gui";
 
 const screenSize = { width: 675, height: 200 };
 // These are the w x h dimensions of the whole note image, which will be used 
@@ -15,10 +16,14 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 };
 
 export class GameScene extends Phaser.Scene {
-    private square!: Phaser.GameObjects.Rectangle & { body: Phaser.Physics.Arcade.Body };
+    private controls!: Phaser.Cameras.Controls.SmoothedKeyControl;
+    private mainContainer!: Phaser.GameObjects.Container;
+    private gui: dat.GUI;
 
     constructor() {
         super(sceneConfig);
+
+        this.gui = new dat.GUI();
     }
 
     public preload() {
@@ -26,22 +31,44 @@ export class GameScene extends Phaser.Scene {
     }
 
     public create() {
+        this.renderDiagnosticsScreen();
+
+        const cursors = this.input.keyboard.createCursorKeys();
+        const controlConfig = {
+            camera: this.cameras.main,
+            left: cursors.left,
+            right: cursors.right,
+            up: cursors.up,
+            down: cursors.down,
+            zoomIn: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Q),
+            zoomOut: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E),
+            acceleration: 0.06,
+            drag: 0.0005,
+            maxSpeed: 1.0
+        };
+
+        this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
+
+        this.mainContainer = this.add.container(screenSize.width, screenSize.height);
+
         const wholeNoteImage = this.add.image(0, 0, "musical-symbols", "whole-note.png").setOrigin(0);
         wholeNoteImage.name = "Whole note";
         wholeNoteImage.setInteractive();
+        this.mainContainer.add(wholeNoteImage);
 
         this.createGrandStaff();
-
-        
 
         this.input.on("pointerover", (event: string | symbol, gameObjects: Phaser.GameObjects.GameObject[]) => {
             feedbackText.text = gameObjects[0].name;
         });
 
         feedbackText = this.add.text(0, 250, "Feedback", { color: "#000000" });
+        this.mainContainer.add(feedbackText);
+
     }
 
-    public update() {
+    public update(time: number, delta: number) {
+        this.controls.update(delta);
     }
 
     createGrandStaff() {
@@ -56,6 +83,9 @@ export class GameScene extends Phaser.Scene {
         var trebleClef = this.add.image(unit * 3, unit, "musical-symbols", "treble-clef.png").setOrigin(0);
         trebleClef.setScale(1.32);
 
+        this.mainContainer.add([f5Line, d5Line, b4Line, g4Line, e4Line, trebleClef]);
+
+
 
         // Bass staff
         //const a3Line = this.createLine("a3 line", 120);
@@ -64,7 +94,6 @@ export class GameScene extends Phaser.Scene {
         //const b2Line = this.createLine("b2 line", 150);
         //const g2Line = this.createLine("g2 line", 160);
         //this.add.image(13, 120, "musical-symbols", "bass-clef.png").setOrigin(0);
-
     }
 
     createLine(name: string, y: number) {
@@ -74,6 +103,26 @@ export class GameScene extends Phaser.Scene {
         line.setLineWidth(1);
 
         return line;
+    }
+
+    renderDiagnosticsScreen() {
+        const camera = this.cameras.main;
+
+        const help = {
+            line1: "Cursors to move",
+            line2: "Q & E to zoom"
+        };
+
+        const f1 = this.gui.addFolder('Camera');
+        f1.add(camera, 'x').listen();
+        f1.add(camera, 'y').listen();
+        f1.add(camera, 'scrollX').listen();
+        f1.add(camera, 'scrollY').listen();
+        f1.add(camera, 'rotation').min(0).step(0.01).listen();
+        f1.add(camera, 'zoom', 0.1, 2).step(0.1).listen();
+        f1.add(help, 'line1');
+        f1.add(help, 'line2');
+        f1.open();
     }
 
     public onObjectClicked(event: string | symbol, gameObject: Phaser.GameObjects.Image) {
