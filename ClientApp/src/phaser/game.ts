@@ -55,7 +55,7 @@ export class GameScene extends Phaser.Scene {
         this.renderGrandStaff();
 
         this.input.on("pointerover", (event: string | symbol, gameObjects: Phaser.GameObjects.GameObject[]) => {
-            console.log(gameObjects[0].name);
+            /*console.log(gameObjects[0].name);*/
             feedbackText.text = gameObjects[0].name;
         });
 
@@ -128,6 +128,17 @@ export class GameScene extends Phaser.Scene {
             ghostNote.destroy();
         });
 
+        let permanentNote: Phaser.GameObjects.Image;
+        let permanentNoteExists = false;
+
+        pitchOverlay.on("pointerdown", () => {
+            if (permanentNoteExists) {
+                permanentNote.destroy();
+                permanentNoteExists = false;
+            } else {
+                permanentNote = this.add.image(ghostNote.x, ghostNote.y, "musical-symbols", "whole-note.png").setOrigin(0);
+            }
+        });
 
         return pitchOverlay;
     }

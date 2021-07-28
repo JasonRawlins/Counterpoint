@@ -3,17 +3,19 @@
 
 Current
 -------
+Clicking on a note removes it.
 
 Done
 ----
+Clicking while hovering places the note.
 Show ghost whole note outline on hover so they can see where the note will go.
 Change the hover handler to render a whole note instead of logging to the console. 
-Draw rectangles around each space and line in the staff and display a message when hovered over with pitch name
+Draw rectangles around each space and line in the staff and display a message when hovered over with pitch name.
 Manage camera zoom settings so they are more smooth. 
-Enable camera zoom
-Display grand staff
-Display the five staff lines
+Enable camera zoom.
+Display grand staff.
+Display the five staff lines.
 Handle hover event for game objects. 
 Clicking on a symbol displays a message. 
-Render a note on screen
+Render a note on screen.
 
