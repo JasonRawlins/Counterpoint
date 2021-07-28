@@ -1,13 +1,13 @@
 ﻿Backlog
 -------
 
-
 Current
 -------
 
-
 Done
 ----
+Show ghost whole note outline on hover so they can see where the note will go.
+Change the hover handler to render a whole note instead of logging to the console. 
 Draw rectangles around each space and line in the staff and display a message when hovered over with pitch name
 Manage camera zoom settings so they are more smooth. 
 Enable camera zoom

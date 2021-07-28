@@ -7,7 +7,7 @@ const screenLeftOffset = 10;
 // to calculate all other measurements as a percentage of the whole note width.
 const wholeNoteHeight = 12;
 const unit = (wholeNoteHeight / screenSize.height) * 100;
-const f5Top= unit * 5;
+const f5Top = unit * 5;
 
 let feedbackText: Phaser.GameObjects.Text;
 
@@ -50,13 +50,7 @@ export class GameScene extends Phaser.Scene {
         };
 
         this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
-
         this.mainContainer = this.add.container(0, 0);
-
-        //const wholeNoteImage = this.add.image(0, 0, "musical-symbols", "whole-note.png").setOrigin(0);
-        //wholeNoteImage.name = "Whole note";
-        //wholeNoteImage.setInteractive();
-        //this.mainContainer.add(wholeNoteImage);
 
         this.renderGrandStaff();
 
@@ -117,13 +111,32 @@ export class GameScene extends Phaser.Scene {
     }
 
     createPitchOverlay(name: string, yOffsetMultiplier: number, color: number) {
-        const pitchOverlay = this.add.rectangle(screenLeftOffset + 10,
-            (f5Top + unit * yOffsetMultiplier) - (wholeNoteHeight / 2),
-            100, wholeNoteHeight, color).setOrigin(0);
+        const pitchOverlay = this.add.rectangle(screenLeftOffset + 10, (f5Top + unit * yOffsetMultiplier) - (wholeNoteHeight / 2), 100, wholeNoteHeight, color).setOrigin(0);
         pitchOverlay.setInteractive();
         pitchOverlay.name = name;
 
+        let ghostNote: Phaser.GameObjects.Image;
+
+        pitchOverlay.on("pointerover", () => {
+            ghostNote = this.add.image(pitchOverlay.x, pitchOverlay.y, "musical-symbols", "whole-note.png").setOrigin(0);
+            ghostNote.name = name;
+            ghostNote.alpha = 0.5;
+            this.mainContainer.add(ghostNote);
+        });
+
+        pitchOverlay.on("pointerout", () => {
+            ghostNote.destroy();
+        });
+
+
         return pitchOverlay;
+    }
+
+    renderGhostNote(x: number, y: number) {
+        const wholeNoteImage = this.add.image(x, y, "musical-symbols", "whole-note.png").setOrigin(0);
+        wholeNoteImage.name = "Whole note";
+        wholeNoteImage.setInteractive();
+        this.mainContainer.add(wholeNoteImage);
     }
 
     renderDiagnosticsScreen() {
