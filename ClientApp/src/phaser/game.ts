@@ -2,10 +2,12 @@ import Phaser from "phaser";
 import * as dat from "dat.gui";
 
 const screenSize = { width: 675, height: 200 };
+const screenLeftOffset = 10;
 // These are the w x h dimensions of the whole note image, which will be used 
 // to calculate all other measurements as a percentage of the whole note width.
-const wholeNoteImageHieght = 12;
-const unit = (wholeNoteImageHieght / screenSize.height) * 100;
+const wholeNoteHeight = 12;
+const unit = (wholeNoteHeight / screenSize.height) * 100;
+const f5Top= unit * 5;
 
 let feedbackText: Phaser.GameObjects.Text;
 
@@ -49,43 +51,53 @@ export class GameScene extends Phaser.Scene {
 
         this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
 
-        this.mainContainer = this.add.container(screenSize.width, screenSize.height);
+        this.mainContainer = this.add.container(0, 0);
 
-        const wholeNoteImage = this.add.image(0, 0, "musical-symbols", "whole-note.png").setOrigin(0);
-        wholeNoteImage.name = "Whole note";
-        wholeNoteImage.setInteractive();
-        this.mainContainer.add(wholeNoteImage);
+        //const wholeNoteImage = this.add.image(0, 0, "musical-symbols", "whole-note.png").setOrigin(0);
+        //wholeNoteImage.name = "Whole note";
+        //wholeNoteImage.setInteractive();
+        //this.mainContainer.add(wholeNoteImage);
 
-        this.createGrandStaff();
+        this.renderGrandStaff();
 
         this.input.on("pointerover", (event: string | symbol, gameObjects: Phaser.GameObjects.GameObject[]) => {
+            console.log(gameObjects[0].name);
             feedbackText.text = gameObjects[0].name;
         });
 
-        feedbackText = this.add.text(0, 250, "Feedback", { color: "#000000" });
+        feedbackText = this.add.text(0, 150, "Feedback", { color: "#000000" });
         this.mainContainer.add(feedbackText);
-
     }
 
     public update(time: number, delta: number) {
         this.controls.update(delta);
     }
 
-    createGrandStaff() {
+    renderGrandStaff() {
+        const f5Overlay = this.createPitchOverlay("f5 overlay", 4, 0xaaaaaa);
+        const e5Overlay = this.createPitchOverlay("e5 overlay", 6, 0xbbbbbb);
+        const d5Overlay = this.createPitchOverlay("d5 overlay", 8, 0xaaaaaa);
+        const c5Overlay = this.createPitchOverlay("c5 overlay", 10, 0xbbbbbb);
+        const b4Overlay = this.createPitchOverlay("b4 overlay", 12, 0xaaaaaa);
+        const a4Overlay = this.createPitchOverlay("a4 overlay", 14, 0xbbbbbb);
+        const g4Overlay = this.createPitchOverlay("g4 overlay", 16, 0xaaaaaa);
+        const f4Overlay = this.createPitchOverlay("f4 overlay", 18, 0xbbbbbb);
+        const e4Overlay = this.createPitchOverlay("e4 overlay", 20, 0xaaaaaa);
+        const d4Overlay = this.createPitchOverlay("d4 overlay", 22, 0xbbbbbb);
+
         // Treble staff
-        const topOfStaff = unit * 5;
-        const f5Line = this.createLine("f5 line", topOfStaff + unit * 2);
-        const d5Line = this.createLine("d5 line", topOfStaff + unit * 4);
-        const b4Line = this.createLine("b4 line", topOfStaff + unit * 6);
-        const g4Line = this.createLine("g4 line", topOfStaff + unit * 8);
-        const e4Line = this.createLine("e4 line", topOfStaff + unit * 10);
-        
+        const f5Line = this.createStaffLine("f5 line", 4);
+        const d5Line = this.createStaffLine("d5 line", 8);
+        const b4Line = this.createStaffLine("b4 line", 12);
+        const g4Line = this.createStaffLine("g4 line", 16);
+        const e4Line = this.createStaffLine("e4 line", 20);
+
         var trebleClef = this.add.image(unit * 3, unit, "musical-symbols", "treble-clef.png").setOrigin(0);
         trebleClef.setScale(1.32);
 
-        this.mainContainer.add([f5Line, d5Line, b4Line, g4Line, e4Line, trebleClef]);
-
-
+        this.mainContainer.add([
+            f5Overlay, e5Overlay, d5Overlay, c5Overlay, b4Overlay, a4Overlay, g4Overlay, f4Overlay, e4Overlay, d4Overlay,
+            f5Line, d5Line, b4Line, g4Line, e4Line, trebleClef]);
 
         // Bass staff
         //const a3Line = this.createLine("a3 line", 120);
@@ -96,13 +108,22 @@ export class GameScene extends Phaser.Scene {
         //this.add.image(13, 120, "musical-symbols", "bass-clef.png").setOrigin(0);
     }
 
-    createLine(name: string, y: number) {
-        const line = this.add.line(10, y, 0, 0, 300, 0, 0x000000).setOrigin(0);
+    createStaffLine(name: string, yOffsetMultiplier: number) {
+        const line = this.add.line(screenLeftOffset, f5Top + unit * yOffsetMultiplier, 0, 0, 300, 0, 0x000000).setOrigin(0);
         line.name = name;
-        line.setInteractive();
         line.setLineWidth(1);
 
         return line;
+    }
+
+    createPitchOverlay(name: string, yOffsetMultiplier: number, color: number) {
+        const pitchOverlay = this.add.rectangle(screenLeftOffset + 10,
+            (f5Top + unit * yOffsetMultiplier) - (wholeNoteHeight / 2),
+            100, wholeNoteHeight, color).setOrigin(0);
+        pitchOverlay.setInteractive();
+        pitchOverlay.name = name;
+
+        return pitchOverlay;
     }
 
     renderDiagnosticsScreen() {

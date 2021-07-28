@@ -4,15 +4,16 @@
 
 Current
 -------
-Manage camera zoom settings so they are more smooth. 
-
 
 
 Done
 ----
-Render a note on screen
-Clicking on a symbol displays a message. 
-Handle hover event for game objects. 
-Display the five staff lines
-Display grand staff
+Draw rectangles around each space and line in the staff and display a message when hovered over with pitch name
+Manage camera zoom settings so they are more smooth. 
 Enable camera zoom
+Display grand staff
+Display the five staff lines
+Handle hover event for game objects. 
+Clicking on a symbol displays a message. 
+Render a note on screen
+
