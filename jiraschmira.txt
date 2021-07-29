@@ -1,12 +1,16 @@
 ﻿Backlog
 -------
+Render the cantus firmus.
 
 Current
 -------
-Clicking on a note removes it.
+Bring over all counterpoint objects from previous project.
+Create two measures.
 
 Done
 ----
+Make sure only one note is placed at a time. 
+Clicking on a note removes it.
 Clicking while hovering places the note.
 Show ghost whole note outline on hover so they can see where the note will go.
 Change the hover handler to render a whole note instead of logging to the console. 
@@ -18,4 +22,3 @@ Display the five staff lines.
 Handle hover event for game objects. 
 Clicking on a symbol displays a message. 
 Render a note on screen.
-

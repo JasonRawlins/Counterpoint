@@ -9,6 +9,26 @@ const wholeNoteHeight = 12;
 const unit = (wholeNoteHeight / screenSize.height) * 100;
 const f5Top = unit * 5;
 
+const C = { // Constants
+    GHOST_NOTE: "GHOST_NOTE",
+    NOTE: "NOTE",
+    pitch: {
+        F5: "F5",
+        E5: "E5",
+        D5: "D5",
+        C5: "C5",
+        B4: "B4",
+        A4: "A4",
+        G4: "G4",
+        F4: "F4",
+        E4: "E4",
+        D4: "F4"
+    },
+    terms: {
+        PITCH: "PITCH"
+    }
+};
+
 let feedbackText: Phaser.GameObjects.Text;
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
@@ -68,16 +88,16 @@ export class GameScene extends Phaser.Scene {
     }
 
     renderGrandStaff() {
-        const f5Overlay = this.createPitchOverlay("f5 overlay", 4, 0xaaaaaa);
-        const e5Overlay = this.createPitchOverlay("e5 overlay", 6, 0xbbbbbb);
-        const d5Overlay = this.createPitchOverlay("d5 overlay", 8, 0xaaaaaa);
-        const c5Overlay = this.createPitchOverlay("c5 overlay", 10, 0xbbbbbb);
-        const b4Overlay = this.createPitchOverlay("b4 overlay", 12, 0xaaaaaa);
-        const a4Overlay = this.createPitchOverlay("a4 overlay", 14, 0xbbbbbb);
-        const g4Overlay = this.createPitchOverlay("g4 overlay", 16, 0xaaaaaa);
-        const f4Overlay = this.createPitchOverlay("f4 overlay", 18, 0xbbbbbb);
-        const e4Overlay = this.createPitchOverlay("e4 overlay", 20, 0xaaaaaa);
-        const d4Overlay = this.createPitchOverlay("d4 overlay", 22, 0xbbbbbb);
+        const f5Overlay = this.createPitchOverlay(C.pitch.F5, 4, 0xaaaaaa);
+        const e5Overlay = this.createPitchOverlay(C.pitch.E5, 6, 0xbbbbbb);
+        const d5Overlay = this.createPitchOverlay(C.pitch.D5, 8, 0xaaaaaa);
+        const c5Overlay = this.createPitchOverlay(C.pitch.C5, 10, 0xbbbbbb);
+        const b4Overlay = this.createPitchOverlay(C.pitch.B4, 12, 0xaaaaaa);
+        const a4Overlay = this.createPitchOverlay(C.pitch.A4, 14, 0xbbbbbb);
+        const g4Overlay = this.createPitchOverlay(C.pitch.G4, 16, 0xaaaaaa);
+        const f4Overlay = this.createPitchOverlay(C.pitch.F4, 18, 0xbbbbbb);
+        const e4Overlay = this.createPitchOverlay(C.pitch.E4, 20, 0xaaaaaa);
+        const d4Overlay = this.createPitchOverlay(C.pitch.D4, 22, 0xbbbbbb);
 
         // Treble staff
         const f5Line = this.createStaffLine("f5 line", 4);
@@ -92,14 +112,6 @@ export class GameScene extends Phaser.Scene {
         this.mainContainer.add([
             f5Overlay, e5Overlay, d5Overlay, c5Overlay, b4Overlay, a4Overlay, g4Overlay, f4Overlay, e4Overlay, d4Overlay,
             f5Line, d5Line, b4Line, g4Line, e4Line, trebleClef]);
-
-        // Bass staff
-        //const a3Line = this.createLine("a3 line", 120);
-        //const f3Line = this.createLine("f3 line", 130);
-        //const d3Line = this.createLine("d3 line", 140);
-        //const b2Line = this.createLine("b2 line", 150);
-        //const g2Line = this.createLine("g2 line", 160);
-        //this.add.image(13, 120, "musical-symbols", "bass-clef.png").setOrigin(0);
     }
 
     createStaffLine(name: string, yOffsetMultiplier: number) {
@@ -110,16 +122,16 @@ export class GameScene extends Phaser.Scene {
         return line;
     }
 
-    createPitchOverlay(name: string, yOffsetMultiplier: number, color: number) {
+    createPitchOverlay(pitch: string, yOffsetMultiplier: number, color: number) {
         const pitchOverlay = this.add.rectangle(screenLeftOffset + 10, (f5Top + unit * yOffsetMultiplier) - (wholeNoteHeight / 2), 100, wholeNoteHeight, color).setOrigin(0);
         pitchOverlay.setInteractive();
-        pitchOverlay.name = name;
+        pitchOverlay.name = pitch;
 
         let ghostNote: Phaser.GameObjects.Image;
 
         pitchOverlay.on("pointerover", () => {
             ghostNote = this.add.image(pitchOverlay.x, pitchOverlay.y, "musical-symbols", "whole-note.png").setOrigin(0);
-            ghostNote.name = name;
+            ghostNote.name = pitch;
             ghostNote.alpha = 0.5;
             this.mainContainer.add(ghostNote);
         });
@@ -128,15 +140,22 @@ export class GameScene extends Phaser.Scene {
             ghostNote.destroy();
         });
 
-        let permanentNote: Phaser.GameObjects.Image;
-        let permanentNoteExists = false;
-
         pitchOverlay.on("pointerdown", () => {
-            if (permanentNoteExists) {
-                permanentNote.destroy();
-                permanentNoteExists = false;
-            } else {
-                permanentNote = this.add.image(ghostNote.x, ghostNote.y, "musical-symbols", "whole-note.png").setOrigin(0);
+            let destroyedNote = "";
+            
+            this.mainContainer.list.forEach(gameObject => {
+                if (gameObject.name === C.NOTE) {
+                    destroyedNote = gameObject.getData(C.terms.PITCH);
+                    gameObject.destroy();
+                }
+            });
+
+            if (pitch !== destroyedNote) {
+                const newNote = this.add.image(ghostNote.x, ghostNote.y, "musical-symbols", "whole-note.png").setOrigin(0);
+                newNote.name = C.NOTE;
+                newNote.setData(C.terms.PITCH, pitch);
+
+                this.mainContainer.add(newNote);
             }
         });
 
