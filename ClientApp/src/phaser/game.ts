@@ -9,9 +9,7 @@ const wholeNoteHeight = 12;
 const unit = (wholeNoteHeight / screenSize.height) * 100;
 const f5Top = unit * 5;
 
-const C = { // Constants
-    GHOST_NOTE: "GHOST_NOTE",
-    NOTE: "NOTE",
+const C = { // Constants. C is for brevity.
     pitch: {
         F5: "F5",
         E5: "E5",
@@ -25,6 +23,8 @@ const C = { // Constants
         D4: "F4"
     },
     terms: {
+        GHOST_NOTE: "GHOST_NOTE",
+        NOTE: "NOTE",
         PITCH: "PITCH"
     }
 };
@@ -144,7 +144,7 @@ export class GameScene extends Phaser.Scene {
             let destroyedNote = "";
             
             this.mainContainer.list.forEach(gameObject => {
-                if (gameObject.name === C.NOTE) {
+                if (gameObject.name === C.terms.NOTE) {
                     destroyedNote = gameObject.getData(C.terms.PITCH);
                     gameObject.destroy();
                 }
@@ -152,7 +152,7 @@ export class GameScene extends Phaser.Scene {
 
             if (pitch !== destroyedNote) {
                 const newNote = this.add.image(ghostNote.x, ghostNote.y, "musical-symbols", "whole-note.png").setOrigin(0);
-                newNote.name = C.NOTE;
+                newNote.name = C.terms.NOTE;
                 newNote.setData(C.terms.PITCH, pitch);
 
                 this.mainContainer.add(newNote);

@@ -17,7 +17,7 @@
       "dom",
       "scripthost"
     ],
-    "skipLibCheck": false
+    "skipLibCheck": true
   },
   "include": [
     "src"

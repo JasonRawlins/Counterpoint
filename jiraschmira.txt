@@ -1,14 +1,15 @@
 ﻿Backlog
 -------
 Render the cantus firmus.
+Figure out how to mix and match notes with rests.
 
 Current
 -------
-Bring over all counterpoint objects from previous project.
 Create two measures.
 
 Done
 ----
+Bring over all counterpoint objects from previous project.
 Make sure only one note is placed at a time. 
 Clicking on a note removes it.
 Clicking while hovering places the note.

@@ -35,6 +35,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="ClientApp\src\music\core.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\music\counterpoint.ts" />
+  </ItemGroup>
+
+  <ItemGroup>
     <_WebToolingArtifacts Remove="Properties\serviceDependencies.json" />
     <_WebToolingArtifacts Remove="Properties\serviceDependencies.local.json" />
   </ItemGroup>
@@ -46,6 +51,7 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\public\images\" />
+    <Folder Include="ClientApp\src\audio\" />
     <Folder Include="Data\" />
   </ItemGroup>
 
