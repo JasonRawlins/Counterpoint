@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 import * as dat from "dat.gui";
 import { Exercise, Voice, VoicePosition } from "../music/counterpoint";
-import { ClefType, Clef, Key } from "../music/core";
+import { Clef, Key } from "../music/core";
 
 const screenSize = { width: 675, height: 200 };
 const screenLeftOffset = 10;
@@ -34,8 +34,8 @@ const C = { // Constants. C is for brevity.
 let feedbackText: Phaser.GameObjects.Text;
 
 const exercise = new Exercise(Key.c,
-    new Voice(VoicePosition.bottom, Clef.bass, "e4, f4, gf", true),
-    new Voice(VoicePosition.top, Clef.treble, "g4, a4, b4")
+    new Voice(VoicePosition.bottom, Clef.bass, "e4 f4 gf", true),
+    new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4")
 );
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
@@ -80,6 +80,7 @@ export class GameScene extends Phaser.Scene {
         this.mainContainer = this.add.container(0, 0);
 
         this.renderGrandStaff();
+        this.renderMeasures();
 
         this.input.on("pointerover", (event: string | symbol, gameObjects: Phaser.GameObjects.GameObject[]) => {
             /*console.log(gameObjects[0].name);*/
@@ -174,6 +175,12 @@ export class GameScene extends Phaser.Scene {
         wholeNoteImage.name = "Whole note";
         wholeNoteImage.setInteractive();
         this.mainContainer.add(wholeNoteImage);
+    }
+
+    renderMeasures() {
+        exercise.cantusFirmus.notes.forEach((note, index) => {
+            const measure = this.add.rectangle(50 * index, f5Top, 40, 40, 0x00ff00).setOrigin(0);
+        });
     }
 
     renderDiagnosticsScreen() {
