@@ -35,6 +35,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="ClientApp\node_modules\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <TypeScriptCompile Remove="ClientApp\src\music\core.ts" />
     <TypeScriptCompile Remove="ClientApp\src\music\counterpoint.ts" />
   </ItemGroup>
