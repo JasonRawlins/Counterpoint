@@ -42,6 +42,7 @@
     <TypeScriptCompile Remove="ClientApp\src\music\core.ts" />
     <TypeScriptCompile Remove="ClientApp\src\music\counterpoint.ts" />
     <TypeScriptCompile Remove="ClientApp\src\phaser\main-scene.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\setupTests.ts" />
   </ItemGroup>
 
   <ItemGroup>

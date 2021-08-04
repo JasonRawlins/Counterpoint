@@ -5,6 +5,8 @@ import { Clef, Key, Note } from "../music/core";
 
 const screenSize = { width: 675, height: 200 };
 const screenLeftOffset = 10;
+const measureLeftOffset = 85;
+const measureDisplayAreaWidth = screenSize.width - measureLeftOffset;
 // These are the w x h dimensions of the whole note image, which will be used 
 // to calculate all other measurements as a percentage of the whole note width.
 const wholeNoteHeight = 12; // Do I need to do this now that I'm using Phaser zoom? I can problably use fixed values not related to the whole note image. 
@@ -121,11 +123,16 @@ export default class MainScene extends Phaser.Scene {
     }
 
     createStaffLine(name: string, yOffsetMultiplier: number) {
-        const line = this.add.line(screenLeftOffset, f5Top + unit * yOffsetMultiplier, 0, 0, 300, 0, 0x000000).setOrigin(0);
+        const line = this.add.line(screenLeftOffset, f5Top + unit * yOffsetMultiplier, 0, 0, 600, 0, 0x000000).setOrigin(0);
         line.name = name;
         line.setLineWidth(1);
 
         return line;
+    }
+
+    createMeasureLine(name: string, measureLeft: number) {
+        const line = this.add.line(measureLeft, f5Top, measureLeft, 0, measureLeft, 100, 0x000000).setOrigin(0);
+        line.setLineWidth(1);
     }
 
     createPitchOverlay(pitch: string, yOffsetMultiplier: number, color: number) {
@@ -176,28 +183,35 @@ export default class MainScene extends Phaser.Scene {
     }
 
     renderMeasures() {
-        this.exercise.cantusFirmus.notes.forEach((note: Note, index: number) => {
-            const measure = this.add.rectangle(50 * index, f5Top, 40, 40, 0x00ff00).setOrigin(0);
+        const measureWidth = measureDisplayAreaWidth / this.exercise.cantusFirmus.notes.length;
+
+        this.exercise.cantusFirmus.notes.forEach((note: Note, measureNumber: number) => {
+            const measureLeft = measureLeftOffset + measureWidth * measureNumber;
+            const measureDisplay = this.add.rectangle(measureLeft, f5Top, measureWidth, 40, 0x00ff00).setOrigin(0);
+            measureDisplay.setData({ note: note, measureNumber: measureNumber });
+            this.mainContainer.add(measureDisplay);
+
+            this.createMeasureLine("", measureLeft)
         });
     }
 
     renderDiagnosticsScreen() {
-        const camera = this.cameras.main;
+        //const camera = this.cameras.main;
 
-        const help = {
-            line1: "Cursors to move",
-            line2: "Q & E to zoom"
-        };
+        //const help = {
+        //    line1: "Cursors to move",
+        //    line2: "Q & E to zoom"
+        //};
 
-        const f1 = this.gui.addFolder('Camera');
-        f1.add(camera, 'x').listen();
-        f1.add(camera, 'y').listen();
-        f1.add(camera, 'scrollX').listen();
-        f1.add(camera, 'scrollY').listen();
-        f1.add(camera, 'rotation').min(0).step(0.01).listen();
-        f1.add(camera, 'zoom', 0.1, 2).step(0.1).listen();
-        f1.add(help, 'line1');
-        f1.add(help, 'line2');
+        //const f1 = this.gui.addFolder('Camera');
+        //f1.add(camera, 'x').listen();
+        //f1.add(camera, 'y').listen();
+        //f1.add(camera, 'scrollX').listen();
+        //f1.add(camera, 'scrollY').listen();
+        //f1.add(camera, 'rotation').min(0).step(0.01).listen();
+        //f1.add(camera, 'zoom', 0.1, 2).step(0.1).listen();
+        //f1.add(help, 'line1');
+        //f1.add(help, 'line2');
         //f1.open();
     }
 
