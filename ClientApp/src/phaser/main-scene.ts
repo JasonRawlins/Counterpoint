@@ -5,14 +5,12 @@ import { Clef, Key, Note } from "../music/core";
 
 const screenSize = { width: 675, height: 200 };
 const screenLeftOffset = 10;
-const measureLeftOffset = 85;
-const measureDisplayAreaWidth = screenSize.width - measureLeftOffset;
 // These are the w x h dimensions of the whole note image, which will be used 
 // to calculate all other measurements as a percentage of the whole note width.
 const wholeNoteHeight = 12; // Do I need to do this now that I'm using Phaser zoom? I can problably use fixed values not related to the whole note image. 
 const unit = (wholeNoteHeight / screenSize.height) * 100;
 
-const f5Top = unit * 5;
+const f5Top = 25;
 
 const C = { // Constants. C is for brevity.
     pitch: {
@@ -45,10 +43,16 @@ export default class MainScene extends Phaser.Scene {
     private mainContainer!: Phaser.GameObjects.Container;
     private gui: dat.GUI;
     private feedbackText!: Phaser.GameObjects.Text;
+
+
     private exercise = new Exercise(Key.c,
-        new Voice(VoicePosition.bottom, Clef.bass, "e4 f4 gf", true),
-        new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4")
+        new Voice(VoicePosition.bottom, Clef.bass, "e4 f4 g4 a4", true),
+        new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c4")
     );
+
+    private measureLeftOffset = 100;
+    private measureWidth = 100;
+    private measuresWidth = this.measureWidth * this.exercise.length;
 
     constructor() {
         super(sceneConfig);
@@ -107,6 +111,9 @@ export default class MainScene extends Phaser.Scene {
         const e4Overlay = this.createPitchOverlay(C.pitch.E4, 20, 0xaaaaaa);
         const d4Overlay = this.createPitchOverlay(C.pitch.D4, 22, 0xbbbbbb);
 
+        const beginningBarLine = this.add.line(screenLeftOffset, f5Top + 4 * unit, 0, 0, 0, unit * 16, 0x000000).setOrigin(0);
+        const endBarline = this.add.line(screenLeftOffset + this.measureLeftOffset + this.exercise.length * this.measureWidth, f5Top + 4 * unit, 0, 0, 0, unit * 16, 0x000000).setOrigin(0);
+
         // Treble staff
         const f5Line = this.createStaffLine("f5 line", 4);
         const d5Line = this.createStaffLine("d5 line", 8);
@@ -114,29 +121,69 @@ export default class MainScene extends Phaser.Scene {
         const g4Line = this.createStaffLine("g4 line", 16);
         const e4Line = this.createStaffLine("e4 line", 20);
 
-        var trebleClef = this.add.image(unit * 3, unit, "musical-symbols", "treble-clef.png").setOrigin(0);
-        trebleClef.setScale(1.32);
+        var trebleClef = this.add.image(unit * 3, unit * 3, "musical-symbols", "treble-clef.png").setOrigin(0);
+        trebleClef.setScale(2);
 
         this.mainContainer.add([
+            beginningBarLine,
             f5Overlay, e5Overlay, d5Overlay, c5Overlay, b4Overlay, a4Overlay, g4Overlay, f4Overlay, e4Overlay, d4Overlay,
-            f5Line, d5Line, b4Line, g4Line, e4Line, trebleClef]);
+            f5Line, d5Line, b4Line, g4Line, e4Line, trebleClef,
+            endBarline]);
     }
 
     createStaffLine(name: string, yOffsetMultiplier: number) {
-        const line = this.add.line(screenLeftOffset, f5Top + unit * yOffsetMultiplier, 0, 0, 600, 0, 0x000000).setOrigin(0);
+        const line = this.add.line(
+            screenLeftOffset,
+            f5Top + unit * yOffsetMultiplier,
+            0,
+            0,
+            this.measureLeftOffset + this.measureWidth * this.exercise.length,
+            0,
+            0x000000).setOrigin(0);
+
         line.name = name;
-        line.setLineWidth(1);
 
         return line;
     }
 
+    renderMeasures() {
+        this.exercise.cantusFirmus.notes.forEach((note: Note, measureNumber: number) => {
+            const measureLeft = this.measureLeftOffset + this.measureWidth * measureNumber;
+            const measureDisplay = this.add.rectangle(
+                measureLeft,
+                f5Top + unit,
+                this.measureWidth * 0.97,
+                f5Top + unit / 2,
+                0x00ff00).setOrigin(0);
+
+            measureDisplay.setData({ note: note, measureNumber: measureNumber });
+            this.mainContainer.add(measureDisplay);
+
+            this.createMeasureLine("", measureLeft / 2)
+        });
+    }
+
     createMeasureLine(name: string, measureLeft: number) {
-        const line = this.add.line(measureLeft, f5Top, measureLeft, 0, measureLeft, 100, 0x000000).setOrigin(0);
-        line.setLineWidth(1);
+        const line = this.add.line(
+            measureLeft,
+            f5Top + unit * 4,
+            measureLeft,
+            0,
+            measureLeft,
+            f5Top + unit * 12,
+            0x000000).setOrigin(0);
+
+        this.mainContainer.add(line);
     }
 
     createPitchOverlay(pitch: string, yOffsetMultiplier: number, color: number) {
-        const pitchOverlay = this.add.rectangle(screenLeftOffset + 10, (f5Top + unit * yOffsetMultiplier) - (wholeNoteHeight / 2), 100, wholeNoteHeight, color).setOrigin(0);
+        const pitchOverlay = this.add.rectangle(
+            this.measureLeftOffset,
+            (f5Top + unit * yOffsetMultiplier) - (wholeNoteHeight / 2),
+            this.measuresWidth ,
+            wholeNoteHeight,
+            color).setOrigin(0);
+
         pitchOverlay.setInteractive();
         pitchOverlay.name = pitch;
 
@@ -180,19 +227,6 @@ export default class MainScene extends Phaser.Scene {
         wholeNoteImage.name = "Whole note";
         //wholeNoteImage.setInteractive();
         this.mainContainer.add(wholeNoteImage);
-    }
-
-    renderMeasures() {
-        const measureWidth = measureDisplayAreaWidth / this.exercise.cantusFirmus.notes.length;
-
-        this.exercise.cantusFirmus.notes.forEach((note: Note, measureNumber: number) => {
-            const measureLeft = measureLeftOffset + measureWidth * measureNumber;
-            const measureDisplay = this.add.rectangle(measureLeft, f5Top, measureWidth, 40, 0x00ff00).setOrigin(0);
-            measureDisplay.setData({ note: note, measureNumber: measureNumber });
-            this.mainContainer.add(measureDisplay);
-
-            this.createMeasureLine("", measureLeft)
-        });
     }
 
     renderDiagnosticsScreen() {

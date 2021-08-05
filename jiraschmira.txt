@@ -6,11 +6,12 @@ Figure out how to mix and match notes with rests.
 Current
 -------
 Display an exercise on the screen and work out all kinks (just test the music stuff and don't integrate with Phaser yet.
-Create two measures.
-Separate the game.ts file into multiple files.
+Get rid of magic numbers in the main scene.
 
 Done
 ----
+Create two measures.
+Separate the game.ts file into multiple files.
 Create an exercise.
 Bring over all counterpoint objects from previous project.
 Make sure only one note is placed at a time. 
