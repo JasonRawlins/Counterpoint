@@ -17,22 +17,22 @@ const style = {
 // to calculate all other measurements as a percentage of the whole note width.
 
 
-const pitchY = { 
-    c6: 0,
-    b5: 2,
-    a5: 4,
-    g5: 6,
-    f5: 8,
-    e5: 10,
-    d5: 12,
-    c5: 14,
-    b4: 16,
-    a4: 18,
-    g4: 20,
-    f4: 22,
-    e4: 24,
-    d4: 26,
-    c4: 28
+enum pitchY { 
+    c6 = 0,
+    b5 = 2,
+    a5 = 4,
+    g5 = 6,
+    f5 = 8,
+    e5 = 10,
+    d5 = 12,
+    c5 = 14,
+    b4 = 16,
+    a4 = 18,
+    g4 = 20,
+    f4 = 22,
+    e4 = 24,
+    d4 = 26,
+    c4 = 28
 };
 
 const C = { // Constants. C is for brevity.
@@ -102,16 +102,12 @@ export default class MainScene extends Phaser.Scene {
             drag: 0.0005,
             maxSpeed: 1.0
         };
-
         this.controls = new Phaser.Cameras.Controls.SmoothedKeyControl(controlConfig);
+
         this.mainContainer = this.add.container(0, 0);
 
         this.renderGrandStaff();
         this.renderMeasures();
-
-        this.input.on("pointerover", (event: string | symbol, gameObjects: Phaser.GameObjects.GameObject[]) => {
-            this.feedbackText.text = gameObjects[0].name;
-        });
 
         this.feedbackText = this.add.text(0, 250, "Feedback", { color: "#000000" });
         this.mainContainer.add(this.feedbackText);
@@ -178,15 +174,11 @@ export default class MainScene extends Phaser.Scene {
     renderMeasures() {
         this.exercise.cantusFirmus.notes.forEach((note: Note, measureNumber: number) => {
             const measureLeft = this.measureLeftOffset + this.measureWidth * measureNumber;
-            const measureDisplay = this.add.rectangle(
-                measureLeft,
-                0,
-                this.measureWidth,
-                pitchY.c4 * unit, 0xffffff).setOrigin(0);
+            const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, pitchY.c4 * unit, 0xffffff).setOrigin(0);
 
             measureDisplay.setInteractive();
             measureDisplay.setAlpha(.5);
-            measureDisplay.name = `measure ${measureNumber}`;
+            measureDisplay.name = `measure ${measureNumber} | note ${note.toString()}`;
             measureDisplay.setData({ note: note, measureNumber: measureNumber });
 
             this.mainContainer.add(measureDisplay);
@@ -197,8 +189,20 @@ export default class MainScene extends Phaser.Scene {
 
             let ghostNote: Phaser.GameObjects.Image;
 
-            measureDisplay.on("pointerover", () => {
-                ghostNote = this.add.image((measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight, measureDisplay.y, "musical-symbols", "whole-note.png").setOrigin(0);
+            measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
+                const pixelToPitchY = (Math.round(pointer.y / (unit * 2)) * unit * 2) - unit;
+                const pitch = pitchY[(pixelToPitchY / unit) + 1];
+                console.log(pitch);
+
+                if (ghostNote) {
+                    ghostNote.destroy();
+                }
+
+                ghostNote = this.add.image(
+                    (measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight,
+                    pixelToPitchY,
+                    "musical-symbols", "whole-note.png").setOrigin(0);
+
                 ghostNote.name = `measure ${measureNumber}`;
                 ghostNote.alpha = 0.5;
                 this.mainContainer.add(ghostNote);
@@ -230,15 +234,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     createMeasureLine(name: string, measureLeft: number) {
-        const line = this.add.line(
-            measureLeft,
-            pitchY.f5 * unit,
-            measureLeft,
-            0,
-            measureLeft,
-            (pitchY.e4 - pitchY.f5) * unit,
-            0x000000).setOrigin(0);
-
+        const line = this.add.line(measureLeft, pitchY.f5 * unit, measureLeft, 0, measureLeft, (pitchY.e4 - pitchY.f5) * unit, 0x000000).setOrigin(0);
         this.mainContainer.add(line);
     }
 
@@ -267,9 +263,5 @@ export default class MainScene extends Phaser.Scene {
         //f1.add(help, 'line1');
         //f1.add(help, 'line2');
         //f1.open();
-    }
-
-    public onObjectClicked(event: string | symbol, gameObject: Phaser.GameObjects.Image) {
-        this.feedbackText.text = "Clicked";
     }
 }

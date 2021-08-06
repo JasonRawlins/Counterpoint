@@ -6,10 +6,10 @@ Display an exercise on the screen and work out all kinks (just test the music st
 
 Current
 -------
-Render the ghost note in the correct measure (centered) and pitch.
 
 Done
 ----
+Render the ghost note in the correct measure and pitch.
 Get rid of magic numbers in the main scene.
 Create two measures.
 Separate the game.ts file into multiple files.
