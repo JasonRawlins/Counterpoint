@@ -2,14 +2,15 @@
 -------
 Render the cantus firmus.
 Figure out how to mix and match notes with rests.
+Display an exercise on the screen and work out all kinks (just test the music stuff and don't integrate with Phaser yet.
 
 Current
 -------
-Display an exercise on the screen and work out all kinks (just test the music stuff and don't integrate with Phaser yet.
-Get rid of magic numbers in the main scene.
+Render the ghost note in the correct measure (centered) and pitch.
 
 Done
 ----
+Get rid of magic numbers in the main scene.
 Create two measures.
 Separate the game.ts file into multiple files.
 Create an exercise.

@@ -4,13 +4,36 @@ import { Exercise, Voice, VoicePosition } from "../music/counterpoint";
 import { Clef, Key, Note } from "../music/core";
 
 const screenSize = { width: 675, height: 200 };
-const screenLeftOffset = 10;
-// These are the w x h dimensions of the whole note image, which will be used 
-// to calculate all other measurements as a percentage of the whole note width.
-const wholeNoteHeight = 12; // Do I need to do this now that I'm using Phaser zoom? I can problably use fixed values not related to the whole note image. 
+const wholeNoteHeight = 12;
 const unit = (wholeNoteHeight / screenSize.height) * 100;
 
-const f5Top = 25;
+const style = {
+    padding: {
+        left: 10
+    }
+};
+
+// These are the w x h dimensions of the whole note image, which will be used 
+// to calculate all other measurements as a percentage of the whole note width.
+
+
+const pitchY = { 
+    c6: 0,
+    b5: 2,
+    a5: 4,
+    g5: 6,
+    f5: 8,
+    e5: 10,
+    d5: 12,
+    c5: 14,
+    b4: 16,
+    a4: 18,
+    g4: 20,
+    f4: 22,
+    e4: 24,
+    d4: 26,
+    c4: 28
+};
 
 const C = { // Constants. C is for brevity.
     pitch: {
@@ -44,7 +67,6 @@ export default class MainScene extends Phaser.Scene {
     private gui: dat.GUI;
     private feedbackText!: Phaser.GameObjects.Text;
 
-
     private exercise = new Exercise(Key.c,
         new Voice(VoicePosition.bottom, Clef.bass, "e4 f4 g4 a4", true),
         new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c4")
@@ -52,7 +74,7 @@ export default class MainScene extends Phaser.Scene {
 
     private measureLeftOffset = 100;
     private measureWidth = 100;
-    private measuresWidth = this.measureWidth * this.exercise.length;
+    //private measuresWidth = this.measureWidth * this.exercise.length;
 
     constructor() {
         super(sceneConfig);
@@ -91,7 +113,7 @@ export default class MainScene extends Phaser.Scene {
             this.feedbackText.text = gameObjects[0].name;
         });
 
-        this.feedbackText = this.add.text(0, 150, "Feedback", { color: "#000000" });
+        this.feedbackText = this.add.text(0, 250, "Feedback", { color: "#000000" });
         this.mainContainer.add(this.feedbackText);
     }
 
@@ -100,41 +122,48 @@ export default class MainScene extends Phaser.Scene {
     }
 
     renderGrandStaff() {
-        const f5Overlay = this.createPitchOverlay(C.pitch.F5, 4, 0xaaaaaa);
-        const e5Overlay = this.createPitchOverlay(C.pitch.E5, 6, 0xbbbbbb);
-        const d5Overlay = this.createPitchOverlay(C.pitch.D5, 8, 0xaaaaaa);
-        const c5Overlay = this.createPitchOverlay(C.pitch.C5, 10, 0xbbbbbb);
-        const b4Overlay = this.createPitchOverlay(C.pitch.B4, 12, 0xaaaaaa);
-        const a4Overlay = this.createPitchOverlay(C.pitch.A4, 14, 0xbbbbbb);
-        const g4Overlay = this.createPitchOverlay(C.pitch.G4, 16, 0xaaaaaa);
-        const f4Overlay = this.createPitchOverlay(C.pitch.F4, 18, 0xbbbbbb);
-        const e4Overlay = this.createPitchOverlay(C.pitch.E4, 20, 0xaaaaaa);
-        const d4Overlay = this.createPitchOverlay(C.pitch.D4, 22, 0xbbbbbb);
+        const beginningBarLine = this.add.line(
+            style.padding.left,
+            pitchY.f5 * unit,
+            0, 0, 0,
+            (pitchY.e4 - pitchY.f5) * unit, 0x000000).setOrigin(0);
 
-        const beginningBarLine = this.add.line(screenLeftOffset, f5Top + 4 * unit, 0, 0, 0, unit * 16, 0x000000).setOrigin(0);
-        const endBarline = this.add.line(screenLeftOffset + this.measureLeftOffset + this.exercise.length * this.measureWidth, f5Top + 4 * unit, 0, 0, 0, unit * 16, 0x000000).setOrigin(0);
-
-        // Treble staff
-        const f5Line = this.createStaffLine("f5 line", 4);
-        const d5Line = this.createStaffLine("d5 line", 8);
-        const b4Line = this.createStaffLine("b4 line", 12);
-        const g4Line = this.createStaffLine("g4 line", 16);
-        const e4Line = this.createStaffLine("e4 line", 20);
-
+        // TODO: Name these magic numbers
         var trebleClef = this.add.image(unit * 3, unit * 3, "musical-symbols", "treble-clef.png").setOrigin(0);
         trebleClef.setScale(2);
 
+        // Treble staff
+        const f5Line = this.createStaffLine("f5 line", pitchY.f5);
+        const d5Line = this.createStaffLine("d5 line", pitchY.d5);
+        const b4Line = this.createStaffLine("b4 line", pitchY.b4);
+        const g4Line = this.createStaffLine("g4 line", pitchY.g4);
+        const e4Line = this.createStaffLine("e4 line", pitchY.e4);
+
+        const endBarline1 = this.add.line(
+            style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth,
+            pitchY.f5 * unit,
+            0, 0, 0,
+            (pitchY.e4 - pitchY.f5) * unit, 0x000000).setOrigin(0);
+
+        const doubleBarSpacing = 4;
+        const endBarline2 = this.add.line(
+            style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth - doubleBarSpacing,
+            pitchY.f5 * unit,
+            0, 0, 0,
+            (pitchY.e4 - pitchY.f5) * unit, 0x000000).setOrigin(0);
+
         this.mainContainer.add([
             beginningBarLine,
-            f5Overlay, e5Overlay, d5Overlay, c5Overlay, b4Overlay, a4Overlay, g4Overlay, f4Overlay, e4Overlay, d4Overlay,
-            f5Line, d5Line, b4Line, g4Line, e4Line, trebleClef,
-            endBarline]);
+            trebleClef,
+            f5Line, d5Line, b4Line, g4Line, e4Line,
+            endBarline1, endBarline2
+        ]);
     }
 
-    createStaffLine(name: string, yOffsetMultiplier: number) {
+    createStaffLine(name: string, pitchY: number) {
         const line = this.add.line(
-            screenLeftOffset,
-            f5Top + unit * yOffsetMultiplier,
+            style.padding.left,
+            pitchY * unit,
             0,
             0,
             this.measureLeftOffset + this.measureWidth * this.exercise.length,
@@ -151,75 +180,66 @@ export default class MainScene extends Phaser.Scene {
             const measureLeft = this.measureLeftOffset + this.measureWidth * measureNumber;
             const measureDisplay = this.add.rectangle(
                 measureLeft,
-                f5Top + unit,
-                this.measureWidth * 0.97,
-                f5Top + unit / 2,
-                0x00ff00).setOrigin(0);
+                0,
+                this.measureWidth,
+                pitchY.c4 * unit, 0xffffff).setOrigin(0);
 
+            measureDisplay.setInteractive();
+            measureDisplay.setAlpha(.5);
+            measureDisplay.name = `measure ${measureNumber}`;
             measureDisplay.setData({ note: note, measureNumber: measureNumber });
+
             this.mainContainer.add(measureDisplay);
 
-            this.createMeasureLine("", measureLeft / 2)
+            if (measureNumber > 0) {
+                this.createMeasureLine("", measureLeft / 2);
+            }
+
+            let ghostNote: Phaser.GameObjects.Image;
+
+            measureDisplay.on("pointerover", () => {
+                ghostNote = this.add.image((measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight, measureDisplay.y, "musical-symbols", "whole-note.png").setOrigin(0);
+                ghostNote.name = `measure ${measureNumber}`;
+                ghostNote.alpha = 0.5;
+                this.mainContainer.add(ghostNote);
+            });
+
+            measureDisplay.on("pointerout", () => {
+                ghostNote.destroy();
+            });
+
+            //pitchOverlay.on("pointerdown", () => {
+            //    let destroyedNote = "";
+
+            //    this.mainContainer.list.forEach(gameObject => {
+            //        if (gameObject.name === C.terms.NOTE) {
+            //            destroyedNote = gameObject.getData(C.terms.PITCH);
+            //            gameObject.destroy();
+            //        }
+            //    });
+
+            //    if (pitch !== destroyedNote) {
+            //        const newNote = this.add.image(ghostNote.x, ghostNote.y, "musical-symbols", "whole-note.png").setOrigin(0);
+            //        newNote.name = C.terms.NOTE;
+            //        newNote.setData(C.terms.PITCH, pitch);
+
+            //        this.mainContainer.add(newNote);
+            //    }
+            //});
         });
     }
 
     createMeasureLine(name: string, measureLeft: number) {
         const line = this.add.line(
             measureLeft,
-            f5Top + unit * 4,
+            pitchY.f5 * unit,
             measureLeft,
             0,
             measureLeft,
-            f5Top + unit * 12,
+            (pitchY.e4 - pitchY.f5) * unit,
             0x000000).setOrigin(0);
 
         this.mainContainer.add(line);
-    }
-
-    createPitchOverlay(pitch: string, yOffsetMultiplier: number, color: number) {
-        const pitchOverlay = this.add.rectangle(
-            this.measureLeftOffset,
-            (f5Top + unit * yOffsetMultiplier) - (wholeNoteHeight / 2),
-            this.measuresWidth ,
-            wholeNoteHeight,
-            color).setOrigin(0);
-
-        pitchOverlay.setInteractive();
-        pitchOverlay.name = pitch;
-
-        let ghostNote: Phaser.GameObjects.Image;
-
-        pitchOverlay.on("pointerover", () => {
-            ghostNote = this.add.image(pitchOverlay.x, pitchOverlay.y, "musical-symbols", "whole-note.png").setOrigin(0);
-            ghostNote.name = pitch;
-            ghostNote.alpha = 0.5;
-            this.mainContainer.add(ghostNote);
-        });
-
-        pitchOverlay.on("pointerout", () => {
-            ghostNote.destroy();
-        });
-
-        pitchOverlay.on("pointerdown", () => {
-            let destroyedNote = "";
-
-            this.mainContainer.list.forEach(gameObject => {
-                if (gameObject.name === C.terms.NOTE) {
-                    destroyedNote = gameObject.getData(C.terms.PITCH);
-                    gameObject.destroy();
-                }
-            });
-
-            if (pitch !== destroyedNote) {
-                const newNote = this.add.image(ghostNote.x, ghostNote.y, "musical-symbols", "whole-note.png").setOrigin(0);
-                newNote.name = C.terms.NOTE;
-                newNote.setData(C.terms.PITCH, pitch);
-
-                this.mainContainer.add(newNote);
-            }
-        });
-
-        return pitchOverlay;
     }
 
     renderGhostNote(x: number, y: number) {
