@@ -2,13 +2,15 @@
 -------
 Render the cantus firmus.
 Figure out how to mix and match notes with rests.
-Display an exercise on the screen and work out all kinks (just test the music stuff and don't integrate with Phaser yet.
 
 Current
 -------
+Clicking on the ghost note creates a permanent note.
 
 Done
 ----
+Make sure hovering over a space or line displays the correct pitch in the console. 
+The staff lines should be as high as the whole note. 
 Render the ghost note in the correct measure and pitch.
 Get rid of magic numbers in the main scene.
 Create two measures.

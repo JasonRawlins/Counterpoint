@@ -13,26 +13,24 @@ const style = {
     }
 };
 
-// These are the w x h dimensions of the whole note image, which will be used 
-// to calculate all other measurements as a percentage of the whole note width.
-
-
-enum pitchY { 
+enum pitchYInSemitones { 
     c6 = 0,
-    b5 = 2,
-    a5 = 4,
-    g5 = 6,
-    f5 = 8,
-    e5 = 10,
-    d5 = 12,
-    c5 = 14,
-    b4 = 16,
-    a4 = 18,
-    g4 = 20,
-    f4 = 22,
-    e4 = 24,
-    d4 = 26,
-    c4 = 28
+    b5 = 1,
+    a5 = 2,
+    g5 = 3,
+    f5 = 4,
+    e5 = 5,
+    d5 = 6,
+    c5 = 7,
+    b4 = 8,
+    a4 = 9,
+    g4 = 10,
+    f4 = 11,
+    e4 = 12,
+    d4 = 13,
+    c4 = 14,
+    b3 = 15,
+    a3 = 16
 };
 
 const C = { // Constants. C is for brevity.
@@ -118,35 +116,22 @@ export default class MainScene extends Phaser.Scene {
     }
 
     renderGrandStaff() {
-        const beginningBarLine = this.add.line(
-            style.padding.left,
-            pitchY.f5 * unit,
-            0, 0, 0,
-            (pitchY.e4 - pitchY.f5) * unit, 0x000000).setOrigin(0);
+        const beginningBarLine = this.add.line(style.padding.left, pitchYInSemitones.f5 * unit, 0, 0, 0, (pitchYInSemitones.e4 - pitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
 
-        // TODO: Name these magic numbers
-        var trebleClef = this.add.image(unit * 3, unit * 3, "musical-symbols", "treble-clef.png").setOrigin(0);
-        trebleClef.setScale(2);
+        const trebleClef = this.add.image(unit * 3, unit * 1.3, "musical-symbols", "treble-clef.png").setOrigin(0);
+        const trebleClefToWholeNoteRatio = 0.168;
+        trebleClef.setScale(trebleClefToWholeNoteRatio * unit);
 
         // Treble staff
-        const f5Line = this.createStaffLine("f5 line", pitchY.f5);
-        const d5Line = this.createStaffLine("d5 line", pitchY.d5);
-        const b4Line = this.createStaffLine("b4 line", pitchY.b4);
-        const g4Line = this.createStaffLine("g4 line", pitchY.g4);
-        const e4Line = this.createStaffLine("e4 line", pitchY.e4);
-
-        const endBarline1 = this.add.line(
-            style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth,
-            pitchY.f5 * unit,
-            0, 0, 0,
-            (pitchY.e4 - pitchY.f5) * unit, 0x000000).setOrigin(0);
+        const f5Line = this.createStaffLine("f5 line", pitchYInSemitones.f5);
+        const d5Line = this.createStaffLine("d5 line", pitchYInSemitones.d5);
+        const b4Line = this.createStaffLine("b4 line", pitchYInSemitones.b4);
+        const g4Line = this.createStaffLine("g4 line", pitchYInSemitones.g4);
+        const e4Line = this.createStaffLine("e4 line", pitchYInSemitones.e4);
 
         const doubleBarSpacing = 4;
-        const endBarline2 = this.add.line(
-            style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth - doubleBarSpacing,
-            pitchY.f5 * unit,
-            0, 0, 0,
-            (pitchY.e4 - pitchY.f5) * unit, 0x000000).setOrigin(0);
+        const endBarline1 = this.add.line(style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth, pitchYInSemitones.f5 * unit, 0, 0, 0, (pitchYInSemitones.e4 - pitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
+        const endBarline2 = this.add.line(style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth - doubleBarSpacing, pitchYInSemitones.f5 * unit, 0, 0, 0, (pitchYInSemitones.e4 - pitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
 
         this.mainContainer.add([
             beginningBarLine,
@@ -156,16 +141,8 @@ export default class MainScene extends Phaser.Scene {
         ]);
     }
 
-    createStaffLine(name: string, pitchY: number) {
-        const line = this.add.line(
-            style.padding.left,
-            pitchY * unit,
-            0,
-            0,
-            this.measureLeftOffset + this.measureWidth * this.exercise.length,
-            0,
-            0x000000).setOrigin(0);
-
+    createStaffLine(name: string, pitchYInSemitones: number) {
+        const line = this.add.line(style.padding.left, pitchYInSemitones * unit, 0, 0, this.measureLeftOffset + this.measureWidth * this.exercise.length, 0, 0x000000).setOrigin(0);
         line.name = name;
 
         return line;
@@ -174,7 +151,7 @@ export default class MainScene extends Phaser.Scene {
     renderMeasures() {
         this.exercise.cantusFirmus.notes.forEach((note: Note, measureNumber: number) => {
             const measureLeft = this.measureLeftOffset + this.measureWidth * measureNumber;
-            const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, pitchY.c4 * unit, 0xffffff).setOrigin(0);
+            const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, (pitchYInSemitones.a3 - pitchYInSemitones.c6) * unit, 0xffffff).setOrigin(0);
 
             measureDisplay.setInteractive();
             measureDisplay.setAlpha(.5);
@@ -190,26 +167,29 @@ export default class MainScene extends Phaser.Scene {
             let ghostNote: Phaser.GameObjects.Image;
 
             measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
-                const pixelToPitchY = (Math.round(pointer.y / (unit * 2)) * unit * 2) - unit;
-                const pitch = pitchY[(pixelToPitchY / unit) + 1];
-                console.log(pitch);
+                const semitones =  (Math.round(pointer.y / unit) * unit);
+                const key = Math.ceil(semitones / unit);
+                const pitch = pitchYInSemitones[key];
+                console.log(`pitch: ${pitch} | semitones: ${semitones} | key: ${key}`);
 
-                if (ghostNote) {
-                    ghostNote.destroy();
-                }
+                // Find the pitch location in pixels
 
-                ghostNote = this.add.image(
-                    (measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight,
-                    pixelToPitchY,
-                    "musical-symbols", "whole-note.png").setOrigin(0);
+                //if (ghostNote) {
+                //    ghostNote.destroy();
+                //}
 
-                ghostNote.name = `measure ${measureNumber}`;
-                ghostNote.alpha = 0.5;
-                this.mainContainer.add(ghostNote);
+                //ghostNote = this.add.image(
+                //    (measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight,
+                //    pixelToPitchY,
+                //    "musical-symbols", "whole-note.png").setOrigin(0);
+
+                //ghostNote.name = `measure ${measureNumber}`;
+                //ghostNote.alpha = 0.5;
+                //this.mainContainer.add(ghostNote);
             });
 
             measureDisplay.on("pointerout", () => {
-                ghostNote.destroy();
+                //ghostNote.destroy();
             });
 
             //pitchOverlay.on("pointerdown", () => {
@@ -234,7 +214,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     createMeasureLine(name: string, measureLeft: number) {
-        const line = this.add.line(measureLeft, pitchY.f5 * unit, measureLeft, 0, measureLeft, (pitchY.e4 - pitchY.f5) * unit, 0x000000).setOrigin(0);
+        const line = this.add.line(measureLeft, pitchYInSemitones.f5 * unit, measureLeft, 0, measureLeft, (pitchYInSemitones.e4 - pitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
         this.mainContainer.add(line);
     }
 
