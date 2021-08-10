@@ -33,7 +33,8 @@ enum pitchYInSemitones {
     a3 = 16
 };
 
-const C = { // Constants. C is for brevity.
+const constants = { // Constants. C is for brevity.
+    DATA: "DATA",
     pitch: {
         F5: "F5",
         E5: "E5",
@@ -76,7 +77,6 @@ export default class MainScene extends Phaser.Scene {
 
     constructor() {
         super(sceneConfig);
-
         this.gui = new dat.GUI();
     }
 
@@ -156,7 +156,7 @@ export default class MainScene extends Phaser.Scene {
             measureDisplay.setInteractive();
             measureDisplay.setAlpha(0.5);
             measureDisplay.name = `measure ${measureNumber} | note ${note.toString()}`;
-            measureDisplay.setData({ note: note, measureNumber: measureNumber });
+            measureDisplay.setData(constants.DATA, { note: note, measureNumber: measureNumber });
 
             this.mainContainer.add(measureDisplay);
 
@@ -168,18 +168,15 @@ export default class MainScene extends Phaser.Scene {
 
             measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
                 const semitones = Math.round(pointer.y / unit);
-                const pitchYKey = pitchYInSemitones[semitones];
+                const pitch = pitchYInSemitones[semitones];
                 const pitchInPixels = semitones * unit - (wholeNoteHeight / 2);
-                console.log(`pitch in pixels: ${pitchInPixels} | semitones: ${semitones} | y: ${pointer.y} | pitch y key: ${pitchYKey}`);
+                console.log(`pitch in pixels: ${pitchInPixels} | semitones: ${semitones} | y: ${pointer.y} | pitch y key: ${pitch} | measure: ${measureDisplay.getData(constants.DATA).measureNumber}`);
 
                 if (ghostNote) {
                     ghostNote.destroy();
                 }
 
-                ghostNote = this.add.image(
-                    (measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight,
-                    pitchInPixels,
-                    "musical-symbols", "whole-note.png").setOrigin(0);
+                ghostNote = this.add.image((measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight, pitchInPixels, "musical-symbols", "whole-note.png").setOrigin(0);
 
                 ghostNote.name = `measure ${measureNumber}`;
                 ghostNote.alpha = 0.5;
@@ -190,24 +187,28 @@ export default class MainScene extends Phaser.Scene {
                 ghostNote.destroy();
             });
 
-            //pitchOverlay.on("pointerdown", () => {
-            //    let destroyedNote = "";
+            measureDisplay.on("pointerdown", () => {
+                const semitones = Math.round(ghostNote.y / unit);
+                const pitch = pitchYInSemitones[semitones];
 
-            //    this.mainContainer.list.forEach(gameObject => {
-            //        if (gameObject.name === C.terms.NOTE) {
-            //            destroyedNote = gameObject.getData(C.terms.PITCH);
-            //            gameObject.destroy();
-            //        }
-            //    });
+                let destroyedNote = "";
 
-            //    if (pitch !== destroyedNote) {
-            //        const newNote = this.add.image(ghostNote.x, ghostNote.y, "musical-symbols", "whole-note.png").setOrigin(0);
-            //        newNote.name = C.terms.NOTE;
-            //        newNote.setData(C.terms.PITCH, pitch);
+                this.mainContainer.list.forEach(gameObject => {
+                    const measureNumber = 
+                    if (gameObject.name === constants.terms.NOTE && gameObject.getData(constants.DATA)?.measureNumber !== measureNumber) {
+                        destroyedNote = gameObject.getData(constants.terms.PITCH);
+                        gameObject.destroy();
+                    }
+                });
 
-            //        this.mainContainer.add(newNote);
-            //    }
-            //});
+                if (pitch !== destroyedNote) {
+                    const newNote = this.add.image(ghostNote.x, ghostNote.y, "musical-symbols", "whole-note.png").setOrigin(0);
+                    newNote.name = constants.terms.NOTE;
+                    newNote.setData(constants.terms.PITCH, pitch);
+
+                    this.mainContainer.add(newNote);
+                }
+            });
         });
     }
 

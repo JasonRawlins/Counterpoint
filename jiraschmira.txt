@@ -2,13 +2,15 @@
 -------
 Render the cantus firmus.
 Figure out how to mix and match notes with rests.
+Make all state changes and then render counterpoint. (i.e. render the screen fresh from the counterpoint data)
 
 Current
 -------
-Clicking on the ghost note creates a permanent note.
+Render all notes in the treble part of the counterpoint.
 
 Done
 ----
+Clicking on the ghost note creates a permanent note.
 Make sure hovering over a space or line displays the correct pitch in the console. 
 The staff lines should be as high as the whole note. 
 Render the ghost note in the correct measure and pitch.
