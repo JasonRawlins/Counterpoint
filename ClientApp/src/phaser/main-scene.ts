@@ -154,7 +154,7 @@ export default class MainScene extends Phaser.Scene {
             const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, (pitchYInSemitones.a3 - pitchYInSemitones.c6) * unit, 0xffffff).setOrigin(0);
 
             measureDisplay.setInteractive();
-            measureDisplay.setAlpha(.5);
+            measureDisplay.setAlpha(0.5);
             measureDisplay.name = `measure ${measureNumber} | note ${note.toString()}`;
             measureDisplay.setData({ note: note, measureNumber: measureNumber });
 
@@ -167,29 +167,27 @@ export default class MainScene extends Phaser.Scene {
             let ghostNote: Phaser.GameObjects.Image;
 
             measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
-                const semitones =  (Math.round(pointer.y / unit) * unit);
-                const key = Math.ceil(semitones / unit);
-                const pitch = pitchYInSemitones[key];
-                console.log(`pitch: ${pitch} | semitones: ${semitones} | key: ${key}`);
+                const semitones = Math.round(pointer.y / unit);
+                const pitchYKey = pitchYInSemitones[semitones];
+                const pitchInPixels = semitones * unit - (wholeNoteHeight / 2);
+                console.log(`pitch in pixels: ${pitchInPixels} | semitones: ${semitones} | y: ${pointer.y} | pitch y key: ${pitchYKey}`);
 
-                // Find the pitch location in pixels
+                if (ghostNote) {
+                    ghostNote.destroy();
+                }
 
-                //if (ghostNote) {
-                //    ghostNote.destroy();
-                //}
+                ghostNote = this.add.image(
+                    (measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight,
+                    pitchInPixels,
+                    "musical-symbols", "whole-note.png").setOrigin(0);
 
-                //ghostNote = this.add.image(
-                //    (measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight,
-                //    pixelToPitchY,
-                //    "musical-symbols", "whole-note.png").setOrigin(0);
-
-                //ghostNote.name = `measure ${measureNumber}`;
-                //ghostNote.alpha = 0.5;
-                //this.mainContainer.add(ghostNote);
+                ghostNote.name = `measure ${measureNumber}`;
+                ghostNote.alpha = 0.5;
+                this.mainContainer.add(ghostNote);
             });
 
             measureDisplay.on("pointerout", () => {
-                //ghostNote.destroy();
+                ghostNote.destroy();
             });
 
             //pitchOverlay.on("pointerdown", () => {
