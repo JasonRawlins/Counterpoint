@@ -159,14 +159,12 @@ export default class MainScene extends Phaser.Scene {
             const measureLeft = this.measureLeftOffset + (this.measureWidth * measureNumber);
             const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, (PitchYInSemitones.a3 - PitchYInSemitones.c6) * unit, 0xffffff).setOrigin(0);
             const measureCenterX = (measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight; // TODO: Why am I using wholeNoteHeight rather than unit
-            console.log(note.toString());
-
             const noteY = PitchYInSemitones[note.toString() as keyof typeof PitchYInSemitones] * unit - (wholeNoteHeight / 2);
 
             measureDisplay.setInteractive();
             measureDisplay.setAlpha(0.5);
             measureDisplay.name = `measure ${measureNumber} | note ${note.toString()}`;
-            //measureDisplay.setData(constants.terms.MEASURE, { number: measureNumber, note: note });
+            measureDisplay.setData(constants.terms.MEASURE, { number: measureNumber, note: note });
 
             this.mainContainer.add(measureDisplay);
 
@@ -186,7 +184,7 @@ export default class MainScene extends Phaser.Scene {
                 const semitones = Math.round(pointer.y / unit);
                 const note = new Note(PitchYInSemitones[semitones]);
                 const pitchInPixels = semitones * unit - (wholeNoteHeight / 2);
-                console.log(`pitch in pixels: ${pitchInPixels} | semitones: ${semitones} | y: ${pointer.y} | note: ${note.toString(true)} | measure: ${measureDisplay.getData(constants.DATA).measureNumber}`);
+                //console.log(`pitch in pixels: ${pitchInPixels} | semitones: ${semitones} | y: ${pointer.y} | note: ${note.toString(true)} | measure: ${measureDisplay.getData(constants.terms.MEASURE).number}`);
 
                 if (ghostNote) {
                     ghostNote.destroy();
@@ -206,16 +204,20 @@ export default class MainScene extends Phaser.Scene {
             measureDisplay.on("pointerdown", () => {
                 const semitones = Math.round(ghostNote.y / unit);
                 const note = new Note(PitchYInSemitones[semitones]);
+                const pitchInPixels = semitones * unit - (wholeNoteHeight / 2);
                 this.exercise.counterpoint.removeNote(measureNumber);
                 this.exercise.counterpoint.addNote(measureNumber, note);
 
                 const noteGameObjects = this.mainContainer.list.filter(gameObject => {
-                    return gameObject.name === constants.terms.NOTE && gameObject.getData(constants.DATA)?.number === measureNumber;
+                    return gameObject.name === constants.terms.NOTE && gameObject.getData(constants.terms.MEASURE)?.number === measureNumber;
                 });
 
                 if (noteGameObjects.length > 0) {
                     noteGameObjects[0].destroy();
                 }
+
+                this.mainContainer.add(this.renderNote(measureCenterX, pitchInPixels, { number: measureNumber, note: note }));
+                console.log(this.exercise.counterpoint.notes);
             });
         });
     }
