@@ -278,7 +278,7 @@ export class Note implements Duration {
                 accidental = "♭";
             }
 
-            letter = letter.toUpperCase();
+            letter = letter.toLowerCase();
         }
 
         return letter + accidental + this.octave;

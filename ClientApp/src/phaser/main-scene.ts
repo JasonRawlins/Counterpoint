@@ -13,7 +13,7 @@ const style = {
     }
 };
 
-enum pitchYInSemitones { 
+enum PitchYInSemitones { 
     c6 = 0,
     b5 = 1,
     a5 = 2,
@@ -33,7 +33,7 @@ enum pitchYInSemitones {
     a3 = 16
 };
 
-const constants = { // Constants. C is for brevity.
+const constants = {
     DATA: "DATA",
     pitch: {
         F5: "F5",
@@ -49,10 +49,16 @@ const constants = { // Constants. C is for brevity.
     },
     terms: {
         GHOST_NOTE: "GHOST_NOTE",
+        MEASURE: "MEASURE",
         NOTE: "NOTE",
         PITCH: "PITCH"
     }
 };
+
+interface Measure {
+    note: Note,
+    number: number
+}
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
     active: false,
@@ -68,7 +74,7 @@ export default class MainScene extends Phaser.Scene {
 
     private exercise = new Exercise(Key.c,
         new Voice(VoicePosition.bottom, Clef.bass, "e4 f4 g4 a4", true),
-        new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c4")
+        new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c5")
     );
 
     private measureLeftOffset = 100;
@@ -116,22 +122,22 @@ export default class MainScene extends Phaser.Scene {
     }
 
     renderGrandStaff() {
-        const beginningBarLine = this.add.line(style.padding.left, pitchYInSemitones.f5 * unit, 0, 0, 0, (pitchYInSemitones.e4 - pitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
+        const beginningBarLine = this.add.line(style.padding.left, PitchYInSemitones.f5 * unit, 0, 0, 0, (PitchYInSemitones.e4 - PitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
 
         const trebleClef = this.add.image(unit * 3, unit * 1.3, "musical-symbols", "treble-clef.png").setOrigin(0);
         const trebleClefToWholeNoteRatio = 0.168;
         trebleClef.setScale(trebleClefToWholeNoteRatio * unit);
 
         // Treble staff
-        const f5Line = this.createStaffLine("f5 line", pitchYInSemitones.f5);
-        const d5Line = this.createStaffLine("d5 line", pitchYInSemitones.d5);
-        const b4Line = this.createStaffLine("b4 line", pitchYInSemitones.b4);
-        const g4Line = this.createStaffLine("g4 line", pitchYInSemitones.g4);
-        const e4Line = this.createStaffLine("e4 line", pitchYInSemitones.e4);
+        const f5Line = this.createStaffLine("f5 line", PitchYInSemitones.f5);
+        const d5Line = this.createStaffLine("d5 line", PitchYInSemitones.d5);
+        const b4Line = this.createStaffLine("b4 line", PitchYInSemitones.b4);
+        const g4Line = this.createStaffLine("g4 line", PitchYInSemitones.g4);
+        const e4Line = this.createStaffLine("e4 line", PitchYInSemitones.e4);
 
         const doubleBarSpacing = 4;
-        const endBarline1 = this.add.line(style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth, pitchYInSemitones.f5 * unit, 0, 0, 0, (pitchYInSemitones.e4 - pitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
-        const endBarline2 = this.add.line(style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth - doubleBarSpacing, pitchYInSemitones.f5 * unit, 0, 0, 0, (pitchYInSemitones.e4 - pitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
+        const endBarline1 = this.add.line(style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth, PitchYInSemitones.f5 * unit, 0, 0, 0, (PitchYInSemitones.e4 - PitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
+        const endBarline2 = this.add.line(style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth - doubleBarSpacing, PitchYInSemitones.f5 * unit, 0, 0, 0, (PitchYInSemitones.e4 - PitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
 
         this.mainContainer.add([
             beginningBarLine,
@@ -149,14 +155,18 @@ export default class MainScene extends Phaser.Scene {
     }
 
     renderMeasures() {
-        this.exercise.cantusFirmus.notes.forEach((note: Note, measureNumber: number) => {
-            const measureLeft = this.measureLeftOffset + this.measureWidth * measureNumber;
-            const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, (pitchYInSemitones.a3 - pitchYInSemitones.c6) * unit, 0xffffff).setOrigin(0);
+        this.exercise.counterpoint.notes.forEach((note: Note, measureNumber: number) => {
+            const measureLeft = this.measureLeftOffset + (this.measureWidth * measureNumber);
+            const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, (PitchYInSemitones.a3 - PitchYInSemitones.c6) * unit, 0xffffff).setOrigin(0);
+            const measureCenterX = (measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight; // TODO: Why am I using wholeNoteHeight rather than unit
+            console.log(note.toString());
+
+            const noteY = PitchYInSemitones[note.toString() as keyof typeof PitchYInSemitones] * unit - (wholeNoteHeight / 2);
 
             measureDisplay.setInteractive();
             measureDisplay.setAlpha(0.5);
             measureDisplay.name = `measure ${measureNumber} | note ${note.toString()}`;
-            measureDisplay.setData(constants.DATA, { note: note, measureNumber: measureNumber });
+            //measureDisplay.setData(constants.terms.MEASURE, { number: measureNumber, note: note });
 
             this.mainContainer.add(measureDisplay);
 
@@ -166,17 +176,23 @@ export default class MainScene extends Phaser.Scene {
 
             let ghostNote: Phaser.GameObjects.Image;
 
+            const counterpointNote = this.exercise.counterpoint.notes[measureNumber];
+            if (counterpointNote) {
+                const measureNote = this.renderNote(measureCenterX, noteY, { number: measureNumber, note: note })
+                this.mainContainer.add(measureNote);
+            }
+
             measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
                 const semitones = Math.round(pointer.y / unit);
-                const pitch = pitchYInSemitones[semitones];
+                const note = new Note(PitchYInSemitones[semitones]);
                 const pitchInPixels = semitones * unit - (wholeNoteHeight / 2);
-                console.log(`pitch in pixels: ${pitchInPixels} | semitones: ${semitones} | y: ${pointer.y} | pitch y key: ${pitch} | measure: ${measureDisplay.getData(constants.DATA).measureNumber}`);
+                console.log(`pitch in pixels: ${pitchInPixels} | semitones: ${semitones} | y: ${pointer.y} | note: ${note.toString(true)} | measure: ${measureDisplay.getData(constants.DATA).measureNumber}`);
 
                 if (ghostNote) {
                     ghostNote.destroy();
                 }
 
-                ghostNote = this.add.image((measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight, pitchInPixels, "musical-symbols", "whole-note.png").setOrigin(0);
+                ghostNote = this.renderNote(measureCenterX, pitchInPixels, { number: measureNumber, note: note });
 
                 ghostNote.name = `measure ${measureNumber}`;
                 ghostNote.alpha = 0.5;
@@ -189,31 +205,31 @@ export default class MainScene extends Phaser.Scene {
 
             measureDisplay.on("pointerdown", () => {
                 const semitones = Math.round(ghostNote.y / unit);
-                const pitch = pitchYInSemitones[semitones];
+                const note = new Note(PitchYInSemitones[semitones]);
+                this.exercise.counterpoint.removeNote(measureNumber);
+                this.exercise.counterpoint.addNote(measureNumber, note);
 
-                let destroyedNote = "";
-
-                this.mainContainer.list.forEach(gameObject => {
-                    const measureNumber = 
-                    if (gameObject.name === constants.terms.NOTE && gameObject.getData(constants.DATA)?.measureNumber !== measureNumber) {
-                        destroyedNote = gameObject.getData(constants.terms.PITCH);
-                        gameObject.destroy();
-                    }
+                const noteGameObjects = this.mainContainer.list.filter(gameObject => {
+                    return gameObject.name === constants.terms.NOTE && gameObject.getData(constants.DATA)?.number === measureNumber;
                 });
 
-                if (pitch !== destroyedNote) {
-                    const newNote = this.add.image(ghostNote.x, ghostNote.y, "musical-symbols", "whole-note.png").setOrigin(0);
-                    newNote.name = constants.terms.NOTE;
-                    newNote.setData(constants.terms.PITCH, pitch);
-
-                    this.mainContainer.add(newNote);
+                if (noteGameObjects.length > 0) {
+                    noteGameObjects[0].destroy();
                 }
             });
         });
     }
 
+    renderNote(x: number, y: number, measure: Measure) {
+        const note = this.add.image(x, y, "musical-symbols", "whole-note.png").setOrigin(0);
+        note.name = constants.terms.NOTE;
+        note.setData(constants.terms.MEASURE, measure);
+
+        return note;
+    }
+
     createMeasureLine(name: string, measureLeft: number) {
-        const line = this.add.line(measureLeft, pitchYInSemitones.f5 * unit, measureLeft, 0, measureLeft, (pitchYInSemitones.e4 - pitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
+        const line = this.add.line(measureLeft, PitchYInSemitones.f5 * unit, measureLeft, 0, measureLeft, (PitchYInSemitones.e4 - PitchYInSemitones.f5) * unit, 0x000000).setOrigin(0);
         this.mainContainer.add(line);
     }
 
