@@ -98,8 +98,10 @@ export default class MainScene extends Phaser.Scene {
         new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c5")
     );
 
-    private measureLeftOffset = 100;
+    private measureLeftOffset = 50;
     private measureWidth = 100;
+    private leftOffset = style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth;
+
 
     constructor() {
         super(sceneConfig);
@@ -142,11 +144,24 @@ export default class MainScene extends Phaser.Scene {
     }
 
     renderGrandStaff() {
-        // Treble staff
-        const trebleBeginningBarLine = this.add.line(style.padding.left, pitchYInSemitones.treble.f5 * unit, 0, 0, 0, (pitchYInSemitones.treble.e4 - pitchYInSemitones.treble.f5) * unit, 0x000000).setOrigin(0);
+        const altoClefTopOffset = 110;
+        const grandStaffTop = pitchYInSemitones.treble.f5 * unit;
+        const grandStaffBottom = grandStaffTop + altoClefTopOffset + (pitchYInSemitones.treble.e4 - pitchYInSemitones.alto.f3) * unit;
 
+        const beginningBarLine = this.add.line(style.padding.left, grandStaffTop, 0, 0, 0, grandStaffBottom, 0x000000).setOrigin(0);
+        const endBarline1 = this.add.line(this.leftOffset + 7, grandStaffTop, 0, 0, 0, grandStaffBottom, 0x000000).setOrigin(0);
+        endBarline1.setLineWidth(3);
+        const endBarline2 = this.add.line(this.leftOffset, grandStaffTop, 0, 0, 0, grandStaffBottom, 0x000000).setOrigin(0);
+
+        // TODO: What is 6.1?
+        const trebleTimeSignature = this.add.image(unit * 9.5, unit * 6.1, "musical-symbols", "common-time.png").setOrigin(0);
+        const trebleTimeSignatureToWholeNoteRatio = 0.155;
+        trebleTimeSignature.setScale(trebleTimeSignatureToWholeNoteRatio * unit);
+
+        // Treble staff
+        // TODO: What is 1.3?
         const trebleClef = this.add.image(unit * 3, unit * 1.3, "musical-symbols", "treble-clef.png").setOrigin(0);
-        const trebleClefToWholeNoteRatio = 0.168;
+        const trebleClefToWholeNoteRatio = 0.166;
         trebleClef.setScale(trebleClefToWholeNoteRatio * unit);
 
         const trebleF5Line = this.createStaffLine(pitchYInSemitones.treble.f5);
@@ -155,17 +170,14 @@ export default class MainScene extends Phaser.Scene {
         const trebleG4Line = this.createStaffLine(pitchYInSemitones.treble.g4);
         const trebleE4Line = this.createStaffLine(pitchYInSemitones.treble.e4);
 
-        const doubleBarSpacing = 4;
-        const trebleEndBarline1 = this.add.line(style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth, pitchYInSemitones.treble.f5 * unit, 0, 0, 0, (pitchYInSemitones.treble.e4 - pitchYInSemitones.treble.f5) * unit, 0x000000).setOrigin(0);
-        const trebleEndBarline2 = this.add.line(style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth - doubleBarSpacing, pitchYInSemitones.treble.f5 * unit, 0, 0, 0, (pitchYInSemitones.treble.e4 - pitchYInSemitones.treble.f5) * unit, 0x000000).setOrigin(0);
-
         // Alto clef
-        const altoClefTopOffset = 110;
-        const altoClefTop = altoClefTopOffset + pitchYInSemitones.alto.g4 * unit;
-        const altoClefBottom = altoClefTopOffset + ((pitchYInSemitones.alto.g4 - pitchYInSemitones.alto.f3) * unit);
-        const altoBeginningBarLine = this.add.line(style.padding.left, altoClefTop, 0, 0, 0, altoClefBottom, 0x000000).setOrigin(0);
+        // TODO: What is 4.1?
+        const altoTimeSignature = this.add.image(unit * 9.5, altoClefTopOffset + unit * 4.1, "musical-symbols", "common-time.png").setOrigin(0);
+        const altoTimeSignatureToWholeNoteRatio = 0.155;
+        altoTimeSignature.setScale(altoTimeSignatureToWholeNoteRatio * unit);
 
-        const altoClef = this.add.image(unit * 3, altoClefTop, "musical-symbols", "alto-clef.png").setOrigin(0);
+        // TODO: What is 2?
+        const altoClef = this.add.image(unit * 3, altoClefTopOffset + unit * 2, "musical-symbols", "alto-clef.png").setOrigin(0);
         const altoClefToWholeNoteRatio = 0.153;
         altoClef.setScale(altoClefToWholeNoteRatio * unit);
 
@@ -175,43 +187,37 @@ export default class MainScene extends Phaser.Scene {
         const altoA4Line = this.createStaffLine(pitchYInSemitones.alto.a3, altoClefTopOffset);
         const altoF3Line = this.createStaffLine(pitchYInSemitones.alto.f3, altoClefTopOffset);
 
-        const altoLeftOffset = style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth;
-        const altoEndBarline1 = this.add.line(altoLeftOffset, altoClefTop, 0, 0, 0, altoClefBottom, 0x000000).setOrigin(0);
-        const altoEndBarline2 = this.add.line(altoLeftOffset - doubleBarSpacing, altoClefTop, 0, 0, 0, altoClefBottom, 0x000000).setOrigin(0);
-
         this.mainContainer.add([
-            trebleBeginningBarLine,
+            beginningBarLine,
             trebleClef,
             trebleF5Line, trebleD5Line, trebleB4Line, trebleG4Line, trebleE4Line,
-            trebleEndBarline1, trebleEndBarline2,
-
-            altoBeginningBarLine,
             altoClef,
             altoG4Line, altoE4Line, altoC4Line, altoA4Line, altoF3Line,
-            altoEndBarline1, altoEndBarline2
+            endBarline1, endBarline2
         ]);
     }
 
     createStaffLine(pitchYInSemitones: number, yOffset: number = 0) {
-        return this.add.line(style.padding.left, (pitchYInSemitones * unit) + yOffset, 0, 0, this.measureLeftOffset + this.measureWidth * this.exercise.length, 0, 0x000000).setOrigin(0);
+        return this.add.line(style.padding.left, (pitchYInSemitones * unit) + yOffset, 0, 0, this.leftOffset, 0, 0x000000).setOrigin(0);
     }
 
     renderMeasures() {
         this.exercise.counterpoint.notes.forEach((note: Note, measureNumber: number) => {
-            const measureLeft = this.measureLeftOffset + (this.measureWidth * measureNumber);
-            const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, (pitchYInSemitones.treble.a3 - pitchYInSemitones.treble.c6) * unit, 0xffffff).setOrigin(0);
-            const measureCenterX = (measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight; // TODO: Why am I using wholeNoteHeight rather than unit
+            const measureDisplay = this.add.rectangle(this.leftOffset, 0, this.measureWidth, (pitchYInSemitones.treble.a3 - pitchYInSemitones.treble.c6) * unit, 0xffffff).setOrigin(0);
+            const measureCenterX = (measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight; // TODO: Why am I using wholeNoteHeight rather than unit?
             const noteY = ((pitchYInSemitones.treble as any)["c4"] as number) * unit - (wholeNoteHeight / 2);
 
             measureDisplay.setInteractive();
-            measureDisplay.setAlpha(0.5);
+            measureDisplay.setAlpha(0.2);
             measureDisplay.name = `measure ${measureNumber} | note ${note.toString()}`;
             measureDisplay.setData(constants.terms.MEASURE, { number: measureNumber, note: note });
 
             this.mainContainer.add(measureDisplay);
 
             if (measureNumber > 0) {
-                this.createMeasureLine("", measureLeft / 2);
+                const measureBottom = (pitchYInSemitones.treble.e4 - pitchYInSemitones.treble.f5) * unit;
+                const line = this.add.line(style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber,  pitchYInSemitones.treble.f5 * unit, 0, 0, 0, measureBottom, 0x000000).setOrigin(0);
+                this.mainContainer.add(line);
             }
 
             let ghostNote: Phaser.GameObjects.Image;
@@ -274,11 +280,6 @@ export default class MainScene extends Phaser.Scene {
         note.setData(constants.terms.MEASURE, measure);
 
         return note;
-    }
-
-    createMeasureLine(name: string, measureLeft: number) {
-        const line = this.add.line(measureLeft, pitchYInSemitones.treble.f5 * unit, measureLeft, 0, measureLeft, (pitchYInSemitones.treble.e4 - pitchYInSemitones.treble.f5) * unit, 0x000000).setOrigin(0);
-        this.mainContainer.add(line);
     }
 
     renderGhostNote(x: number, y: number) {
