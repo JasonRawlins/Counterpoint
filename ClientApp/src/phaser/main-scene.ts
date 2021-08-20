@@ -4,7 +4,7 @@ import { Exercise, Voice, VoicePosition } from "../music/counterpoint";
 import { Clef, Key, Note } from "../music/core";
 
 const screenSize = { width: 675, height: 200 };
-const wholeNoteHeight = 12;
+const wholeNoteHeight = 12; // The height of the whole note image in pixels. 
 const halfWholeNoteHeight = wholeNoteHeight / 2;
 const unit = (wholeNoteHeight / screenSize.height) * 100;
 const altoClefTopOffset = unit * 18;
@@ -35,7 +35,6 @@ const pitchYInSemitones = {
         b3: 15,
         a3: 16,
         fromSemitones: (semitones: number) => {
-            console.log();
             return "c4"; //return Object.keys(this).find(k => ((this as any)[k] as number) === semitones);
         }
     },
@@ -78,9 +77,10 @@ const constants = {
     }
 };
 
-interface Measure {
+interface MeasureData {
     note: Note,
-    number: number
+    number: number,
+    isCantusFirmus: boolean
 }
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
@@ -213,7 +213,7 @@ export default class MainScene extends Phaser.Scene {
                 this.mainContainer.add(line);
             }
 
-            const measureCantusFirmusNote = this.renderNote(measureCenterX, noteY, { number: measureNumber, note: note })
+            const measureCantusFirmusNote = this.renderNote(measureCenterX, noteY, { number: measureNumber, note: note, isCantusFirmus: true })
             this.mainContainer.add(measureCantusFirmusNote);
         });
 
@@ -240,23 +240,20 @@ export default class MainScene extends Phaser.Scene {
 
             const counterpointNote = this.exercise.counterpoint.notes[measureNumber];
             if (counterpointNote) {
-                const measureCounterpointNote = this.renderNote(measureCenterX, noteY, { number: measureNumber, note: note })
+                const measureCounterpointNote = this.renderNote(measureCenterX, noteY, { number: measureNumber, note: note, isCantusFirmus: false })
                 this.mainContainer.add(measureCounterpointNote);
             }
 
             measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
                 const semitones = Math.round(pointer.y / unit);
-                const test = pitchYInSemitones.treble.fromSemitones(semitones);
-                console.log(test);
-                const note = new Note("c4");
+                const note = new Note(pitchYInSemitones.treble.fromSemitones(semitones));
                 const pitchInPixels = semitones * unit - halfWholeNoteHeight;
-                //console.log(`pitch in pixels: ${pitchInPixels} | semitones: ${semitones} | y: ${pointer.y} | note: ${note.toString(true)} | measure: ${measureDisplay.getData(constants.terms.MEASURE).number}`);
 
                 if (ghostNote) {
                     ghostNote.destroy();
                 }
 
-                ghostNote = this.renderNote(measureCenterX, pitchInPixels, { number: measureNumber, note: note });
+                ghostNote = this.renderNote(measureCenterX, pitchInPixels, { number: measureNumber, note: note, isCantusFirmus: false });
 
                 ghostNote.name = `measure ${measureNumber}`;
                 ghostNote.alpha = 0.5;
@@ -269,28 +266,30 @@ export default class MainScene extends Phaser.Scene {
 
             measureDisplay.on("pointerdown", () => {
                 const semitones = Math.round((ghostNote.y + halfWholeNoteHeight) / unit);
-                const test = pitchYInSemitones.treble.fromSemitones(semitones);
-                console.log(test);
-                const note = new Note(test);
+                const note = new Note(pitchYInSemitones.treble.fromSemitones(semitones));
                 const pitchInPixels = semitones * unit - halfWholeNoteHeight;
                 this.exercise.counterpoint.removeNote(measureNumber);
                 this.exercise.counterpoint.addNote(measureNumber, note);
 
                 const noteGameObjects = this.mainContainer.list.filter(gameObject => {
-                    return gameObject.name === constants.terms.NOTE && gameObject.getData(constants.terms.MEASURE)?.number === measureNumber;
+                    if (gameObject.name !== constants.terms.NOTE)
+                        return false;
+
+                    const measureData = gameObject.getData(constants.terms.MEASURE) as MeasureData;
+
+                    return measureData && measureData.number === measureNumber && !measureData.isCantusFirmus;
                 });
 
                 if (noteGameObjects.length > 0) {
                     noteGameObjects[0].destroy();
                 }
 
-                this.mainContainer.add(this.renderNote(measureCenterX, pitchInPixels, { number: measureNumber, note: note }));
-                console.log(this.exercise.counterpoint.notes.map(note => note.toString(true)));
+                this.mainContainer.add(this.renderNote(measureCenterX, pitchInPixels, { number: measureNumber, note: note, isCantusFirmus: false }));
             });
         });
     }
 
-    renderNote(x: number, y: number, measure: Measure) {
+    renderNote(x: number, y: number, measure: MeasureData) {
         const note = this.add.image(x, y, "musical-symbols", "whole-note.png").setOrigin(0);
         note.name = constants.terms.NOTE;
         note.setData(constants.terms.MEASURE, measure);
