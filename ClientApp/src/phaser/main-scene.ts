@@ -6,6 +6,7 @@ import { Clef, Key, Note } from "../music/core";
 const screenSize = { width: 675, height: 200 };
 const wholeNoteHeight = 12;
 const unit = (wholeNoteHeight / screenSize.height) * 100;
+const altoClefTopOffset = unit * 18;
 
 const style = {
     padding: {
@@ -94,14 +95,13 @@ export default class MainScene extends Phaser.Scene {
     private feedbackText!: Phaser.GameObjects.Text;
 
     private exercise = new Exercise(Key.c,
-        new Voice(VoicePosition.bottom, Clef.bass, "e4 f4 g4 a4", true),
-        new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c5")
+        new Voice(VoicePosition.bottom, Clef.alto, "g4 f4 e4 d4", true),
+        new Voice(VoicePosition.top, Clef.treble, "b4 c5 d5 e5")
     );
 
     private measureLeftOffset = 50;
     private measureWidth = 100;
     private leftOffset = style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth;
-
 
     constructor() {
         super(sceneConfig);
@@ -144,7 +144,6 @@ export default class MainScene extends Phaser.Scene {
     }
 
     renderGrandStaff() {
-        const altoClefTopOffset = 110;
         const grandStaffTop = pitchYInSemitones.treble.f5 * unit;
         const grandStaffBottom = grandStaffTop + altoClefTopOffset + (pitchYInSemitones.treble.e4 - pitchYInSemitones.alto.f3) * unit;
 
@@ -202,10 +201,26 @@ export default class MainScene extends Phaser.Scene {
     }
 
     renderMeasures() {
+        this.exercise.cantusFirmus.notes.forEach((note: Note, measureNumber: number) => {
+            const measureLeft = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
+            const measureCenterX = (measureLeft + this.measureWidth / 2) - unit * 2;
+            const noteY = altoClefTopOffset + ((pitchYInSemitones.alto as any)[note.toString()] as number) * unit - (wholeNoteHeight / 2);
+
+            if (measureNumber > 0) {
+                const measureBottom = (pitchYInSemitones.alto.f3 - pitchYInSemitones.alto.g4) * unit;
+                const line = this.add.line(measureLeft, altoClefTopOffset + pitchYInSemitones.alto.g4 * unit, 0, 0, 0, measureBottom, 0x000000).setOrigin(0);
+                this.mainContainer.add(line);
+            }
+
+            const measureCantusFirmusNote = this.renderNote(measureCenterX, noteY, { number: measureNumber, note: note })
+            this.mainContainer.add(measureCantusFirmusNote);
+        });
+
         this.exercise.counterpoint.notes.forEach((note: Note, measureNumber: number) => {
-            const measureDisplay = this.add.rectangle(this.leftOffset, 0, this.measureWidth, (pitchYInSemitones.treble.a3 - pitchYInSemitones.treble.c6) * unit, 0xffffff).setOrigin(0);
-            const measureCenterX = (measureDisplay.x + this.measureWidth / 2) - wholeNoteHeight; // TODO: Why am I using wholeNoteHeight rather than unit?
-            const noteY = ((pitchYInSemitones.treble as any)["c4"] as number) * unit - (wholeNoteHeight / 2);
+            const measureLeft = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
+            const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, (pitchYInSemitones.treble.a3 - pitchYInSemitones.treble.c6) * unit, 0xffffff).setOrigin(0);
+            const measureCenterX = (measureDisplay.x + this.measureWidth / 2) - unit * 2;
+            const noteY = ((pitchYInSemitones.treble as any)[note.toString()] as number) * unit - (wholeNoteHeight / 2);
 
             measureDisplay.setInteractive();
             measureDisplay.setAlpha(0.2);
@@ -216,7 +231,7 @@ export default class MainScene extends Phaser.Scene {
 
             if (measureNumber > 0) {
                 const measureBottom = (pitchYInSemitones.treble.e4 - pitchYInSemitones.treble.f5) * unit;
-                const line = this.add.line(style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber,  pitchYInSemitones.treble.f5 * unit, 0, 0, 0, measureBottom, 0x000000).setOrigin(0);
+                const line = this.add.line(measureLeft, pitchYInSemitones.treble.f5 * unit, 0, 0, 0, measureBottom, 0x000000).setOrigin(0);
                 this.mainContainer.add(line);
             }
 
@@ -224,8 +239,8 @@ export default class MainScene extends Phaser.Scene {
 
             const counterpointNote = this.exercise.counterpoint.notes[measureNumber];
             if (counterpointNote) {
-                const measureNote = this.renderNote(measureCenterX, noteY, { number: measureNumber, note: note })
-                this.mainContainer.add(measureNote);
+                const measureCounterpointNote = this.renderNote(measureCenterX, noteY, { number: measureNumber, note: note })
+                this.mainContainer.add(measureCounterpointNote);
             }
 
             measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
