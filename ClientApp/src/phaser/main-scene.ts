@@ -5,6 +5,7 @@ import { Clef, Key, Note } from "../music/core";
 
 const screenSize = { width: 675, height: 200 };
 const wholeNoteHeight = 12;
+const halfWholeNoteHeight = wholeNoteHeight / 2;
 const unit = (wholeNoteHeight / screenSize.height) * 100;
 const altoClefTopOffset = unit * 18;
 
@@ -204,7 +205,7 @@ export default class MainScene extends Phaser.Scene {
         this.exercise.cantusFirmus.notes.forEach((note: Note, measureNumber: number) => {
             const measureLeft = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
             const measureCenterX = (measureLeft + this.measureWidth / 2) - unit * 2;
-            const noteY = altoClefTopOffset + ((pitchYInSemitones.alto as any)[note.toString()] as number) * unit - (wholeNoteHeight / 2);
+            const noteY = altoClefTopOffset + ((pitchYInSemitones.alto as any)[note.toString()] as number) * unit - halfWholeNoteHeight;
 
             if (measureNumber > 0) {
                 const measureBottom = (pitchYInSemitones.alto.f3 - pitchYInSemitones.alto.g4) * unit;
@@ -220,7 +221,7 @@ export default class MainScene extends Phaser.Scene {
             const measureLeft = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
             const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, (pitchYInSemitones.treble.a3 - pitchYInSemitones.treble.c6) * unit, 0xffffff).setOrigin(0);
             const measureCenterX = (measureDisplay.x + this.measureWidth / 2) - unit * 2;
-            const noteY = ((pitchYInSemitones.treble as any)[note.toString()] as number) * unit - (wholeNoteHeight / 2);
+            const noteY = ((pitchYInSemitones.treble as any)[note.toString()] as number) * unit - halfWholeNoteHeight;
 
             measureDisplay.setInteractive();
             measureDisplay.setAlpha(0.2);
@@ -248,7 +249,7 @@ export default class MainScene extends Phaser.Scene {
                 const test = pitchYInSemitones.treble.fromSemitones(semitones);
                 console.log(test);
                 const note = new Note("c4");
-                const pitchInPixels = semitones * unit - (wholeNoteHeight / 2);
+                const pitchInPixels = semitones * unit - halfWholeNoteHeight;
                 //console.log(`pitch in pixels: ${pitchInPixels} | semitones: ${semitones} | y: ${pointer.y} | note: ${note.toString(true)} | measure: ${measureDisplay.getData(constants.terms.MEASURE).number}`);
 
                 if (ghostNote) {
@@ -267,11 +268,11 @@ export default class MainScene extends Phaser.Scene {
             });
 
             measureDisplay.on("pointerdown", () => {
-                const semitones = Math.round((ghostNote.y + (wholeNoteHeight / 2)) / unit);
+                const semitones = Math.round((ghostNote.y + halfWholeNoteHeight) / unit);
                 const test = pitchYInSemitones.treble.fromSemitones(semitones);
                 console.log(test);
                 const note = new Note(test);
-                const pitchInPixels = semitones * unit - (wholeNoteHeight / 2);
+                const pitchInPixels = semitones * unit - halfWholeNoteHeight;
                 this.exercise.counterpoint.removeNote(measureNumber);
                 this.exercise.counterpoint.addNote(measureNumber, note);
 
