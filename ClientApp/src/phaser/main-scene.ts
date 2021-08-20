@@ -33,10 +33,7 @@ const pitchYInSemitones = {
         d4: 13,
         c4: 14,
         b3: 15,
-        a3: 16,
-        fromSemitones: (semitones: number) => {
-            return "c4"; //return Object.keys(this).find(k => ((this as any)[k] as number) === semitones);
-        }
+        a3: 16
     },
     alto: {
         b4: 0,
@@ -52,6 +49,10 @@ const pitchYInSemitones = {
         f3: 10,
         e3: 11,
         d3: 12
+    },
+    fromSemitones: (clef: {}, semitones: number) => {
+        var clefKey = Object.keys(clef).find(k => (clef as any)[k] as number === semitones);
+        return clefKey || "";
     }
 }
 
@@ -111,6 +112,25 @@ export default class MainScene extends Phaser.Scene {
 
     public preload() {
         this.load.multiatlas("musical-symbols", "assets/musical-symbols.json", "assets");
+        this.load.audio("f3", "assets/audio/f3.mp3");
+        this.load.audio("g3", "assets/audio/g3.mp3");
+        this.load.audio("a3", "assets/audio/a3.mp3");
+        this.load.audio("b3", "assets/audio/b3.mp3");
+        this.load.audio("c4", "assets/audio/c4.mp3");
+        this.load.audio("d4", "assets/audio/d4.mp3");
+        this.load.audio("e4", "assets/audio/e4.mp3");
+        this.load.audio("f4", "assets/audio/f4.mp3");
+        this.load.audio("g4", "assets/audio/g4.mp3");
+        this.load.audio("a4", "assets/audio/a4.mp3");
+        this.load.audio("b4", "assets/audio/b4.mp3");
+        this.load.audio("c5", "assets/audio/c5.mp3");
+        this.load.audio("d5", "assets/audio/d5.mp3");
+        this.load.audio("e5", "assets/audio/e5.mp3");
+        this.load.audio("f5", "assets/audio/f5.mp3");
+        this.load.audio("g5", "assets/audio/g5.mp3");
+        this.load.audio("a5", "assets/audio/a5.mp3");
+        this.load.audio("b5", "assets/audio/b5.mp3");
+        this.load.audio("c6", "assets/audio/c6.mp3");
     }
 
     public create() {
@@ -135,9 +155,14 @@ export default class MainScene extends Phaser.Scene {
 
         this.renderGrandStaff();
         this.renderMeasures();
+        this.renderTransportControls();
 
         this.feedbackText = this.add.text(0, 250, "Feedback", { color: "#000000" });
         this.mainContainer.add(this.feedbackText);
+    }
+
+    renderTransportControls() {
+        
     }
 
     public update(time: number, delta: number) {
@@ -246,7 +271,7 @@ export default class MainScene extends Phaser.Scene {
 
             measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
                 const semitones = Math.round(pointer.y / unit);
-                const note = new Note(pitchYInSemitones.treble.fromSemitones(semitones));
+                const note = new Note(pitchYInSemitones.fromSemitones(pitchYInSemitones.treble, semitones));
                 const pitchInPixels = semitones * unit - halfWholeNoteHeight;
 
                 if (ghostNote) {
@@ -266,17 +291,22 @@ export default class MainScene extends Phaser.Scene {
 
             measureDisplay.on("pointerdown", () => {
                 const semitones = Math.round((ghostNote.y + halfWholeNoteHeight) / unit);
-                const note = new Note(pitchYInSemitones.treble.fromSemitones(semitones));
+                const note = new Note(pitchYInSemitones.fromSemitones(pitchYInSemitones.treble, semitones));
                 const pitchInPixels = semitones * unit - halfWholeNoteHeight;
                 this.exercise.counterpoint.removeNote(measureNumber);
                 this.exercise.counterpoint.addNote(measureNumber, note);
+
+                const placedNoteSound = this.sound.add(note.toString());
+                const cantusFirmusNoteSound = this.sound.add(this.exercise.cantusFirmus.notes[measureNumber].toString());
+
+                placedNoteSound.play();
+                cantusFirmusNoteSound.play();
 
                 const noteGameObjects = this.mainContainer.list.filter(gameObject => {
                     if (gameObject.name !== constants.terms.NOTE)
                         return false;
 
                     const measureData = gameObject.getData(constants.terms.MEASURE) as MeasureData;
-
                     return measureData && measureData.number === measureNumber && !measureData.isCantusFirmus;
                 });
 

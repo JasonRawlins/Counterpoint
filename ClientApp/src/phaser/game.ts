@@ -16,7 +16,10 @@ const gameConfig: Phaser.Types.Core.GameConfig = {
     },
     parent: "phaser",
     backgroundColor: "#ebd5b3",
-    scene: MainScene
+    scene: MainScene,
+    audio: {
+        disableWebAudio: true
+    }
 };
 
 export const Game = new Phaser.Game(gameConfig);
