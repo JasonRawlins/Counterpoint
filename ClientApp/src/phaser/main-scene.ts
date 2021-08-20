@@ -7,7 +7,7 @@ const screenSize = { width: 675, height: 200 };
 const wholeNoteHeight = 12; // The height of the whole note image in pixels. 
 const halfWholeNoteHeight = wholeNoteHeight / 2;
 const unit = (wholeNoteHeight / screenSize.height) * 100;
-const altoClefTopOffset = unit * 18;
+const altoClefTopOffset = 18 * unit;
 
 const style = {
     padding: {
@@ -162,7 +162,25 @@ export default class MainScene extends Phaser.Scene {
     }
 
     renderTransportControls() {
-        
+        const playButton = this.add.triangle(style.padding.left, 30 * unit, 0, 0, 50, 25, 0, 50, 0x00FF00).setOrigin(0);
+        playButton.setInteractive();
+        playButton.on("pointerdown", () => {
+            let measureNumber = 0;
+            const intervalHandle = setInterval(() => {
+                const cantusFirmusNoteSound = this.sound.add(this.exercise.cantusFirmus.notes[measureNumber].toString());
+                const counterpointNoteSound = this.sound.add(this.exercise.counterpoint.notes[measureNumber].toString());
+
+                cantusFirmusNoteSound.play();
+                counterpointNoteSound.play();
+
+                measureNumber++;
+                if (measureNumber >= this.exercise.cantusFirmus.notes.length) {
+                    clearInterval(intervalHandle);
+                }
+            }, 500);
+        });
+
+        this.mainContainer.add(playButton);
     }
 
     public update(time: number, delta: number) {
@@ -179,13 +197,13 @@ export default class MainScene extends Phaser.Scene {
         const endBarline2 = this.add.line(this.leftOffset, grandStaffTop, 0, 0, 0, grandStaffBottom, 0x000000).setOrigin(0);
 
         // TODO: What is 6.1?
-        const trebleTimeSignature = this.add.image(unit * 9.5, unit * 6.1, "musical-symbols", "common-time.png").setOrigin(0);
+        const trebleTimeSignature = this.add.image(9.5 * unit, 6.1 * unit, "musical-symbols", "common-time.png").setOrigin(0);
         const trebleTimeSignatureToWholeNoteRatio = 0.155;
         trebleTimeSignature.setScale(trebleTimeSignatureToWholeNoteRatio * unit);
 
         // Treble staff
         // TODO: What is 1.3?
-        const trebleClef = this.add.image(unit * 3, unit * 1.3, "musical-symbols", "treble-clef.png").setOrigin(0);
+        const trebleClef = this.add.image(3 * unit, 1.3 * unit, "musical-symbols", "treble-clef.png").setOrigin(0);
         const trebleClefToWholeNoteRatio = 0.166;
         trebleClef.setScale(trebleClefToWholeNoteRatio * unit);
 
@@ -197,12 +215,12 @@ export default class MainScene extends Phaser.Scene {
 
         // Alto clef
         // TODO: What is 4.1?
-        const altoTimeSignature = this.add.image(unit * 9.5, altoClefTopOffset + unit * 4.1, "musical-symbols", "common-time.png").setOrigin(0);
+        const altoTimeSignature = this.add.image(9.5 * unit, altoClefTopOffset + 4.1 * unit, "musical-symbols", "common-time.png").setOrigin(0);
         const altoTimeSignatureToWholeNoteRatio = 0.155;
         altoTimeSignature.setScale(altoTimeSignatureToWholeNoteRatio * unit);
 
         // TODO: What is 2?
-        const altoClef = this.add.image(unit * 3, altoClefTopOffset + unit * 2, "musical-symbols", "alto-clef.png").setOrigin(0);
+        const altoClef = this.add.image(3 * unit, altoClefTopOffset + 2 * unit, "musical-symbols", "alto-clef.png").setOrigin(0);
         const altoClefToWholeNoteRatio = 0.153;
         altoClef.setScale(altoClefToWholeNoteRatio * unit);
 
@@ -223,13 +241,13 @@ export default class MainScene extends Phaser.Scene {
     }
 
     createStaffLine(pitchYInSemitones: number, yOffset: number = 0) {
-        return this.add.line(style.padding.left, (pitchYInSemitones * unit) + yOffset, 0, 0, this.leftOffset, 0, 0x000000).setOrigin(0);
+        return this.add.line(style.padding.left, pitchYInSemitones * unit + yOffset, 0, 0, this.leftOffset, 0, 0x000000).setOrigin(0);
     }
 
     renderMeasures() {
         this.exercise.cantusFirmus.notes.forEach((note: Note, measureNumber: number) => {
             const measureLeft = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
-            const measureCenterX = (measureLeft + this.measureWidth / 2) - unit * 2;
+            const measureCenterX = (measureLeft + this.measureWidth / 2) - 2 * unit;
             const noteY = altoClefTopOffset + ((pitchYInSemitones.alto as any)[note.toString()] as number) * unit - halfWholeNoteHeight;
 
             if (measureNumber > 0) {
@@ -245,7 +263,7 @@ export default class MainScene extends Phaser.Scene {
         this.exercise.counterpoint.notes.forEach((note: Note, measureNumber: number) => {
             const measureLeft = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
             const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, (pitchYInSemitones.treble.a3 - pitchYInSemitones.treble.c6) * unit, 0xffffff).setOrigin(0);
-            const measureCenterX = (measureDisplay.x + this.measureWidth / 2) - unit * 2;
+            const measureCenterX = (measureDisplay.x + this.measureWidth / 2) - 2 * unit;
             const noteY = ((pitchYInSemitones.treble as any)[note.toString()] as number) * unit - halfWholeNoteHeight;
 
             measureDisplay.setInteractive();
@@ -297,10 +315,7 @@ export default class MainScene extends Phaser.Scene {
                 this.exercise.counterpoint.addNote(measureNumber, note);
 
                 const placedNoteSound = this.sound.add(note.toString());
-                const cantusFirmusNoteSound = this.sound.add(this.exercise.cantusFirmus.notes[measureNumber].toString());
-
                 placedNoteSound.play();
-                cantusFirmusNoteSound.play();
 
                 const noteGameObjects = this.mainContainer.list.filter(gameObject => {
                     if (gameObject.name !== constants.terms.NOTE)
