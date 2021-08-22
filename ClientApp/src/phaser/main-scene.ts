@@ -49,11 +49,16 @@ const pitchYInSemitones = {
         f3: 10,
         e3: 11,
         d3: 12
-    },
-    fromSemitones: (clef: {}, semitones: number) => {
-        var clefKey = Object.keys(clef).find(k => (clef as any)[k] as number === semitones);
-        return clefKey || "";
     }
+}
+
+function noteFromSemitones(clef: {}, semitones: number) {
+    var clefKey = Object.keys(clef).find(k => (clef as any)[k] as number === semitones);
+    return new Note(clefKey || "");
+}
+
+function semitonesFromNote(clef: {}, note: Note) {
+    return (clef as any)[note.toString()] as number;
 }
 
 const constants = {
@@ -72,6 +77,7 @@ const constants = {
     },
     terms: {
         GHOST_NOTE: "GHOST_NOTE",
+        LEDGER_LINE: "LEDGER_LINE",
         MEASURE: "MEASURE",
         NOTE: "NOTE",
         PITCH: "PITCH"
@@ -280,6 +286,7 @@ export default class MainScene extends Phaser.Scene {
             }
 
             let ghostNote: Phaser.GameObjects.Image;
+            let ledgerLine: Phaser.GameObjects.Line;
 
             const counterpointNote = this.exercise.counterpoint.notes[measureNumber];
             if (counterpointNote) {
@@ -289,9 +296,8 @@ export default class MainScene extends Phaser.Scene {
 
             measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
                 const semitones = Math.round(pointer.y / unit);
-                const note = new Note(pitchYInSemitones.fromSemitones(pitchYInSemitones.treble, semitones));
+                const note = noteFromSemitones(pitchYInSemitones.treble, semitones);
                 const pitchInPixels = semitones * unit - halfWholeNoteHeight;
-
                 if (ghostNote) {
                     ghostNote.destroy();
                 }
@@ -301,6 +307,29 @@ export default class MainScene extends Phaser.Scene {
                 ghostNote.name = `measure ${measureNumber}`;
                 ghostNote.alpha = 0.5;
                 this.mainContainer.add(ghostNote);
+
+                const ledgerLineGameObjects = this.mainContainer.list.filter(gameObject => {
+                    if (gameObject.name.includes(constants.terms.LEDGER_LINE)
+                        && gameObject.name.includes(constants.terms.GHOST_NOTE)) {
+                        gameObject.destroy();
+                    }
+                });
+
+                const possibleLedgerLines = [
+                    pitchYInSemitones.treble.a3,
+                    pitchYInSemitones.treble.c4,
+                    pitchYInSemitones.treble.a5,
+                    pitchYInSemitones.treble.c5
+                ];
+
+                let displayLedgerLine = possibleLedgerLines
+                    .some(possibleLedgerLine => possibleLedgerLine === semitonesFromNote(pitchYInSemitones.treble, note));
+
+                if (displayLedgerLine) {
+                    ledgerLine = this.add.line(ghostNote.x - 0.5 * unit, ghostNote.y, 0, halfWholeNoteHeight, ghostNote.width + unit, halfWholeNoteHeight, 0x000000, 0.5).setOrigin(0);
+                    ledgerLine.name = `${constants.terms.LEDGER_LINE},${constants.terms.GHOST_NOTE}`;
+                    this.mainContainer.add(ledgerLine);
+                }
             });
 
             measureDisplay.on("pointerout", () => {
@@ -309,7 +338,7 @@ export default class MainScene extends Phaser.Scene {
 
             measureDisplay.on("pointerdown", () => {
                 const semitones = Math.round((ghostNote.y + halfWholeNoteHeight) / unit);
-                const note = new Note(pitchYInSemitones.fromSemitones(pitchYInSemitones.treble, semitones));
+                const note = noteFromSemitones(pitchYInSemitones.treble, semitones);
                 const pitchInPixels = semitones * unit - halfWholeNoteHeight;
                 this.exercise.counterpoint.removeNote(measureNumber);
                 this.exercise.counterpoint.addNote(measureNumber, note);

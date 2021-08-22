@@ -6,10 +6,11 @@ Make all state changes and then render counterpoint. (i.e. render the screen fre
 
 Current
 -------
-Render ledger lines.
+Render ledger lines on placed note.
 
 Done
 ----
+Render ledger lines for ghost note.
 Play the exercise audio.
 Render the alto clef.
 Render the cantus firmus.
