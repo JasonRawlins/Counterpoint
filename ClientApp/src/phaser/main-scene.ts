@@ -6,6 +6,7 @@ import { Clef, Key, Note } from "../music/core";
 const screenSize = { width: 675, height: 200 };
 const wholeNoteHeight = 12; // The height of the whole note image in pixels. 
 const halfWholeNoteHeight = wholeNoteHeight / 2;
+const wholeNoteWidth = 21;
 const unit = (wholeNoteHeight / screenSize.height) * 100;
 const altoClefTopOffset = 18 * unit;
 
@@ -14,6 +15,11 @@ const style = {
         left: 10
     }
 };
+
+//interface IPitchYInSemitones {
+//    treble: { c6: number, b5: number, a5: number, g5: number, f5: number, e5: number, d5: number, c5: number, b4: number, a4: number, g4: number, f4: number, e4: number, d4: number, c4: number, b3: number, a3: number },
+//    alto: {}
+//}
 
 const pitchYInSemitones = {
     treble: {
@@ -36,19 +42,22 @@ const pitchYInSemitones = {
         a3: 16
     },
     alto: {
-        b4: 0,
-        a4: 1,
-        g4: 2,
-        f4: 3,
-        e4: 4,
-        d4: 5,
-        c4: 6,
-        b3: 7,
-        a3: 8,
-        g3: 9,
-        f3: 10,
-        e3: 11,
-        d3: 12
+        d5: 0,
+        c5: 1,
+        b4: 2,
+        a4: 3,
+        g4: 4,
+        f4: 5,
+        e4: 6,
+        d4: 7,
+        c4: 8,
+        b3: 9,
+        a3: 10,
+        g3: 11,
+        f3: 12,
+        e3: 13,
+        d3: 14,
+        c3: 15
     }
 }
 
@@ -103,11 +112,11 @@ export default class MainScene extends Phaser.Scene {
     private feedbackText!: Phaser.GameObjects.Text;
 
     private exercise = new Exercise(Key.c,
-        new Voice(VoicePosition.bottom, Clef.alto, "g4 f4 e4 d4", true),
-        new Voice(VoicePosition.top, Clef.treble, "b4 c5 d5 e5")
+        new Voice(VoicePosition.bottom, Clef.alto, "b4 f4 d3 d3", true),
+        new Voice(VoicePosition.top, Clef.treble, "c4 c5 c4 a5")
     );
 
-    private measureLeftOffset = 50;
+    private measureLeftOffset = 70;
     private measureWidth = 100;
     private leftOffset = style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth;
 
@@ -161,6 +170,7 @@ export default class MainScene extends Phaser.Scene {
 
         this.renderGrandStaff();
         this.renderMeasures();
+        this.renderLedgerLines();
         this.renderTransportControls();
 
         this.feedbackText = this.add.text(0, 250, "Feedback", { color: "#000000" });
@@ -195,7 +205,7 @@ export default class MainScene extends Phaser.Scene {
 
     renderGrandStaff() {
         const grandStaffTop = pitchYInSemitones.treble.f5 * unit;
-        const grandStaffBottom = grandStaffTop + altoClefTopOffset + (pitchYInSemitones.treble.e4 - pitchYInSemitones.alto.f3) * unit;
+        const grandStaffBottom = grandStaffTop + altoClefTopOffset + (pitchYInSemitones.treble.e4 - pitchYInSemitones.alto.f3) + 4 * unit;
 
         const beginningBarLine = this.add.line(style.padding.left, grandStaffTop, 0, 0, 0, grandStaffBottom, 0x000000).setOrigin(0);
         const endBarline1 = this.add.line(this.leftOffset + 7, grandStaffTop, 0, 0, 0, grandStaffBottom, 0x000000).setOrigin(0);
@@ -220,13 +230,13 @@ export default class MainScene extends Phaser.Scene {
         const trebleE4Line = this.createStaffLine(pitchYInSemitones.treble.e4);
 
         // Alto clef
-        // TODO: What is 4.1?
-        const altoTimeSignature = this.add.image(9.5 * unit, altoClefTopOffset + 4.1 * unit, "musical-symbols", "common-time.png").setOrigin(0);
+        // TODO: What is 6.1?
+        const altoTimeSignature = this.add.image(9.5 * unit, altoClefTopOffset + 6.1 * unit, "musical-symbols", "common-time.png").setOrigin(0);
         const altoTimeSignatureToWholeNoteRatio = 0.155;
         altoTimeSignature.setScale(altoTimeSignatureToWholeNoteRatio * unit);
 
-        // TODO: What is 2?
-        const altoClef = this.add.image(3 * unit, altoClefTopOffset + 2 * unit, "musical-symbols", "alto-clef.png").setOrigin(0);
+        // TODO: What is 4?
+        const altoClef = this.add.image(3 * unit, altoClefTopOffset + 4 * unit, "musical-symbols", "alto-clef.png").setOrigin(0);
         const altoClefToWholeNoteRatio = 0.153;
         altoClef.setScale(altoClefToWholeNoteRatio * unit);
 
@@ -264,6 +274,9 @@ export default class MainScene extends Phaser.Scene {
 
             const measureCantusFirmusNote = this.renderNote(measureCenterX, noteY, { number: measureNumber, note: note, isCantusFirmus: true })
             this.mainContainer.add(measureCantusFirmusNote);
+
+            // Render ledger lines
+
         });
 
         this.exercise.counterpoint.notes.forEach((note: Note, measureNumber: number) => {
@@ -285,8 +298,7 @@ export default class MainScene extends Phaser.Scene {
                 this.mainContainer.add(line);
             }
 
-            let ghostNote: Phaser.GameObjects.Image;
-            let ledgerLine: Phaser.GameObjects.Line;
+            let ghostNoteImage: Phaser.GameObjects.Image;
 
             const counterpointNote = this.exercise.counterpoint.notes[measureNumber];
             if (counterpointNote) {
@@ -298,22 +310,15 @@ export default class MainScene extends Phaser.Scene {
                 const semitones = Math.round(pointer.y / unit);
                 const note = noteFromSemitones(pitchYInSemitones.treble, semitones);
                 const pitchInPixels = semitones * unit - halfWholeNoteHeight;
-                if (ghostNote) {
-                    ghostNote.destroy();
+                if (ghostNoteImage) {
+                    ghostNoteImage.destroy();
                 }
 
-                ghostNote = this.renderNote(measureCenterX, pitchInPixels, { number: measureNumber, note: note, isCantusFirmus: false });
+                ghostNoteImage = this.renderNote(measureCenterX, pitchInPixels, { number: measureNumber, note: note, isCantusFirmus: false });
 
-                ghostNote.name = `measure ${measureNumber}`;
-                ghostNote.alpha = 0.5;
-                this.mainContainer.add(ghostNote);
-
-                const ledgerLineGameObjects = this.mainContainer.list.filter(gameObject => {
-                    if (gameObject.name.includes(constants.terms.LEDGER_LINE)
-                        && gameObject.name.includes(constants.terms.GHOST_NOTE)) {
-                        gameObject.destroy();
-                    }
-                });
+                ghostNoteImage.name = `measure ${measureNumber}`;
+                ghostNoteImage.alpha = 0.5;
+                this.mainContainer.add(ghostNoteImage);
 
                 const possibleLedgerLines = [
                     pitchYInSemitones.treble.a3,
@@ -321,23 +326,14 @@ export default class MainScene extends Phaser.Scene {
                     pitchYInSemitones.treble.a5,
                     pitchYInSemitones.treble.c5
                 ];
-
-                let displayLedgerLine = possibleLedgerLines
-                    .some(possibleLedgerLine => possibleLedgerLine === semitonesFromNote(pitchYInSemitones.treble, note));
-
-                if (displayLedgerLine) {
-                    ledgerLine = this.add.line(ghostNote.x - 0.5 * unit, ghostNote.y, 0, halfWholeNoteHeight, ghostNote.width + unit, halfWholeNoteHeight, 0x000000, 0.5).setOrigin(0);
-                    ledgerLine.name = `${constants.terms.LEDGER_LINE},${constants.terms.GHOST_NOTE}`;
-                    this.mainContainer.add(ledgerLine);
-                }
             });
 
             measureDisplay.on("pointerout", () => {
-                ghostNote.destroy();
+                ghostNoteImage.destroy();
             });
 
             measureDisplay.on("pointerdown", () => {
-                const semitones = Math.round((ghostNote.y + halfWholeNoteHeight) / unit);
+                const semitones = Math.round((ghostNoteImage.y + halfWholeNoteHeight) / unit);
                 const note = noteFromSemitones(pitchYInSemitones.treble, semitones);
                 const pitchInPixels = semitones * unit - halfWholeNoteHeight;
                 this.exercise.counterpoint.removeNote(measureNumber);
@@ -364,7 +360,9 @@ export default class MainScene extends Phaser.Scene {
     }
 
     renderNote(x: number, y: number, measure: MeasureData) {
-        const note = this.add.image(x, y, "musical-symbols", "whole-note.png").setOrigin(0);
+        console.log("FEWF: " + unit);
+        // What is 2? Just pixel pushing?
+        const note = this.add.image(x + 2, y, "musical-symbols", "whole-note.png").setOrigin(0);
         note.name = constants.terms.NOTE;
         note.setData(constants.terms.MEASURE, measure);
 
@@ -375,6 +373,58 @@ export default class MainScene extends Phaser.Scene {
         const wholeNoteImage = this.add.image(x, y, "musical-symbols", "whole-note.png").setOrigin(0);
         wholeNoteImage.name = "Whole note";
         this.mainContainer.add(wholeNoteImage);
+    }
+
+    renderLedgerLines() {
+        const possibleLedgerLines = [
+            pitchYInSemitones.treble.a3,
+            pitchYInSemitones.treble.a5,
+            pitchYInSemitones.treble.c6,
+            pitchYInSemitones.alto.d3,
+            pitchYInSemitones.alto.b4,
+            pitchYInSemitones.alto.d5,
+        ];
+
+        // Remove all ledger lines.
+        this.mainContainer.list.filter(gameObject => {
+            if (gameObject.name.includes(constants.terms.LEDGER_LINE) && !gameObject.name.includes(constants.terms.GHOST_NOTE)) {
+                gameObject.destroy();
+            }
+        });
+
+        this.exercise.cantusFirmus.notes.forEach((note: Note, measureNumber: number) => {
+            // Get x and y for each note
+            const noteInSemitones = semitonesFromNote(pitchYInSemitones.alto, note);
+            const y = noteInSemitones * unit + altoClefTopOffset
+            console.log("noteInSemitones: " + noteInSemitones);
+            console.log(possibleLedgerLines);
+            if (possibleLedgerLines.includes(noteInSemitones)) {
+                const x = this.measureLeftOffset + this.measureWidth * measureNumber + this.measureWidth / 2;
+
+                //const ledgerLine = this.add.line(x - 0.5 * unit, y - halfWholeNoteHeight, 0, halfWholeNoteHeight, wholeNoteWidth + unit, halfWholeNoteHeight, 0x000000).setOrigin(0);
+                const ledgerLine = this.add.line(
+                    x - 2,
+                    y,
+                    0, // x1
+                    0, // y1
+                    wholeNoteWidth + 4, // x2
+                    0, // y2
+                    0x000000).setOrigin(0);
+
+                ledgerLine.name = constants.terms.LEDGER_LINE;
+                this.mainContainer.add(ledgerLine);
+            }
+        });
+
+
+        //let displayLedgerLine = possibleLedgerLines
+        //    .some(possibleLedgerLine => possibleLedgerLine === semitonesFromNote(pitchYInSemitones, note));
+
+        //if (displayLedgerLine) {
+        //    ledgerLine = this.add.line(ghostNote.x - 0.5 * unit, ghostNote.y, 0, halfWholeNoteHeight, ghostNote.width + unit, halfWholeNoteHeight, 0x000000, 0.5).setOrigin(0);
+        //    ledgerLine.name = `${constants.terms.LEDGER_LINE},${constants.terms.GHOST_NOTE}`;
+        //    this.mainContainer.add(ledgerLine);
+        //}
     }
 
     renderDiagnosticsScreen() {

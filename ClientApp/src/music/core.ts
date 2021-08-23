@@ -135,7 +135,7 @@ export class Interval {
     private static getQuality(referenceNote: Note, simpleComparisonNote: Note, simpleValue: number): any {
         const semitoneDifference: number = simpleComparisonNote.midiNumber - referenceNote.midiNumber;
 
-        return (<any>{
+        return ({
             "1,0": intervalQualities.perfect,
             "1,1": intervalQualities.augmented,
             "2,1": intervalQualities.minor,
@@ -157,7 +157,7 @@ export class Interval {
             "7,10": intervalQualities.minor,
             "7,11": intervalQualities.major,
             "8,12": intervalQualities.perfect
-        })[simpleValue + "," + semitoneDifference];
+        } as any)[simpleValue + "," + semitoneDifference];
     }
 
     private static getSimpleIntervalInfo(referenceNote: Note, comparisonNote: Note, value: number) {
