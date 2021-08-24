@@ -6,6 +6,7 @@ Make all state changes and then render counterpoint. (i.e. render the screen fre
 
 Current
 -------
+Validate parallel octaves and display red lines on the offending notes.
 
 Done
 ----

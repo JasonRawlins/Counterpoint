@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 import * as dat from "dat.gui";
 import { Exercise, Voice, VoicePosition } from "../music/counterpoint";
-import { Clef, Key, Note } from "../music/core";
+import { Clef, Interval, Key, Note } from "../music/core";
 
 const screenSize = { width: 675, height: 200 };
 const wholeNoteHeight = 12; // The height of the whole note image in pixels. 
@@ -123,8 +123,8 @@ export default class MainScene extends Phaser.Scene {
     private ghostNoteImage!: Phaser.GameObjects.Image;
 
     private exercise = new Exercise(Key.c,
-        new Voice(VoicePosition.bottom, Clef.alto, "b4 f4 d3 d3", true),
-        new Voice(VoicePosition.top, Clef.treble, "c4 c5 c4 a5")
+        new Voice(VoicePosition.bottom, Clef.alto, "c4 e4 d4 f4", true),
+        new Voice(VoicePosition.top, Clef.treble, "c5 e5 d5 f5")
     );
 
     private measureLeftOffset = 70;
@@ -215,6 +215,7 @@ export default class MainScene extends Phaser.Scene {
     public update(time: number, delta: number) {
         this.controls.update(delta);
         this.renderLedgerLines();
+        this.validateExercise();
     }
 
     renderGrandStaff() {
@@ -411,6 +412,41 @@ export default class MainScene extends Phaser.Scene {
             ledgerLine.name = constants.terms.LEDGER_LINE;
             ledgerLine.alpha = alpha;
             this.mainContainer.add(ledgerLine);
+        }
+    }
+
+    validateExercise() {
+        const exercise = this.exercise;
+
+        validateParallelOctaves();
+
+        function validateParallelOctaves() {
+            exercise.cantusFirmus.notes.forEach((currentCantusFirmusNote: Note, measureNumber: number) => {
+                if (measureNumber + 1 < exercise.length) {
+                    const nextCantusFirmusNote = exercise.cantusFirmus.notes[measureNumber + 1];
+                    const currentCounterpointNote = exercise.counterpoint.notes[measureNumber];
+                    const nextCounterpointNote = exercise.counterpoint.notes[measureNumber + 1];
+
+                    //if (currentCantusFirmusNote && nextCantusFirmusNote && currentCounterpointNote && nextCounterpointNote) {
+
+                    const firstInterval = new Interval(currentCantusFirmusNote, nextCantusFirmusNote);
+                    const secondInterval = new Interval(currentCounterpointNote, nextCounterpointNote);
+
+                    console.log(
+                        `measureNumber: ${measureNumber} | 
+cf1: ${currentCantusFirmusNote} | 
+cp1: ${currentCounterpointNote} |
+int1: ${firstInterval} |
+cf2: ${nextCantusFirmusNote} | 
+cp2: ${nextCounterpointNote} |
+int2: ${secondInterval}`);
+
+                    if (firstInterval.isOctave() && secondInterval.isOctave()) {
+                        console.log(`parallel octaves in measures ${measureNumber} and ${measureNumber + 1}`);
+                    }
+                    //}
+                }
+            });
         }
     }
 
