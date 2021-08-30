@@ -17,10 +17,15 @@
       "dom",
       "scripthost"
     ],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": [
+      "jest" 
+    ]
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.test.js"
   ],
   "include": [
     "src"

@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="ClientApp\src\music\core.test.ts" />
     <TypeScriptCompile Remove="ClientApp\src\music\core.ts" />
     <TypeScriptCompile Remove="ClientApp\src\music\counterpoint.ts" />
     <TypeScriptCompile Remove="ClientApp\src\setupTests.ts" />

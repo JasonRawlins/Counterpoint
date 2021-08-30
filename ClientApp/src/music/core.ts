@@ -73,7 +73,7 @@ export class Interval {
         const comparisonNoteScaleDegree = Key.c.indexOf(comparisonNote.letter);
         const octaveDifference = comparisonNote.octave - referenceNote.octave;
         this.value = comparisonNoteScaleDegree - referenceNoteScaleDegree + 1 + (IntervalConstant.octaveInSteps * octaveDifference);
-        const simpleIntervalInfo: { value: number, comparisonNote: Note } = Interval.getSimpleIntervalInfo(referenceNote, comparisonNote, this.value);
+        const simpleIntervalInfo: { value: number, comparisonNote: Note } = Interval.getSimpleInterval(referenceNote, comparisonNote, this.value);
         this.simpleValue = simpleIntervalInfo.value;
         this.simpleComparisonNote = simpleIntervalInfo.comparisonNote;
         this.quality = Interval.getQuality(referenceNote, this.simpleComparisonNote, this.simpleValue);
@@ -160,7 +160,7 @@ export class Interval {
         } as any)[simpleValue + "," + semitoneDifference];
     }
 
-    private static getSimpleIntervalInfo(referenceNote: Note, comparisonNote: Note, value: number) {
+    private static getSimpleInterval(referenceNote: Note, comparisonNote: Note, value: number) {
         let simpleComparisonNote = comparisonNote;
         let simpleValue = value;
 
