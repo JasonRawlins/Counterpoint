@@ -1,5 +1,5 @@
 import * as Phaser from "phaser";
-import * as dat from "dat.gui";
+//import * as dat from "dat.gui";
 import { Exercise, Voice, VoicePosition } from "../music/counterpoint";
 import { Clef, Interval, Key, Note } from "../music/core";
 
@@ -118,7 +118,7 @@ const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
 export default class MainScene extends Phaser.Scene {
     private controls!: Phaser.Cameras.Controls.SmoothedKeyControl;
     private mainContainer!: Phaser.GameObjects.Container;
-    private gui: dat.GUI;
+    //private gui: dat.GUI;
     private feedbackText!: Phaser.GameObjects.Text;
     private ghostNoteImage!: Phaser.GameObjects.Image;
 
@@ -133,7 +133,7 @@ export default class MainScene extends Phaser.Scene {
 
     constructor() {
         super(sceneConfig);
-        this.gui = new dat.GUI();
+        //this.gui = new dat.GUI();
     }
 
     public preload() {
@@ -404,7 +404,7 @@ export default class MainScene extends Phaser.Scene {
         const noteInSemitones = semitonesFromNote(pitchYInSemitones, note);
         const y = noteInSemitones * unit + topOffset
 
-        if (possibleLedgerLines.includes(noteInSemitones)) {
+        if (possibleLedgerLines.indexOf(noteInSemitones) !== -1) {
             const x = this.measureLeftOffset + this.measureWidth * measureNumber + this.measureWidth / 2;
             //console.log(`topOffset: ${topOffset} | x: ${x} | y: ${y} | note: ${note.toString()}`);
 

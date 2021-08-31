@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -39,10 +39,26 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\App.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\Counter.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\FetchData.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\Home.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\Layout.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\components\NavMenu.tsx" />
+    <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\music\core.test.ts" />
     <TypeScriptCompile Remove="ClientApp\src\music\core.ts" />
     <TypeScriptCompile Remove="ClientApp\src\music\counterpoint.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\phaser\game.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\phaser\main-scene.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\react-app-env.d.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\registerServiceWorker.ts" />
     <TypeScriptCompile Remove="ClientApp\src\setupTests.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\store\configureStore.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\store\Counter.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\store\index.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\store\WeatherForecasts.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -56,8 +72,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\public\images\" />
-    <Folder Include="ClientApp\src\audio\" />
     <Folder Include="Data\" />
   </ItemGroup>
 
