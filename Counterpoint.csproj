@@ -21,7 +21,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.3.5">
+    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.4.2">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -40,7 +40,6 @@
 
   <ItemGroup>
     <TypeScriptCompile Remove="ClientApp\src\App.test.tsx" />
-    <TypeScriptCompile Remove="ClientApp\src\App.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\Counter.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\FetchData.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\components\Home.tsx" />
@@ -48,8 +47,7 @@
     <TypeScriptCompile Remove="ClientApp\src\components\NavMenu.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\music\core.test.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\music\core.ts" />
-    <TypeScriptCompile Remove="ClientApp\src\music\counterpoint.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\music\counterpoint.test.ts" />
     <TypeScriptCompile Remove="ClientApp\src\phaser\game.ts" />
     <TypeScriptCompile Remove="ClientApp\src\phaser\main-scene.ts" />
     <TypeScriptCompile Remove="ClientApp\src\react-app-env.d.ts" />
@@ -104,5 +102,4 @@
       </ResolvedFileToPublish>
     </ItemGroup>
   </Target>
-
 </Project>

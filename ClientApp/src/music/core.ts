@@ -128,7 +128,7 @@ export class Interval {
         return this.value === 1;
     }
 
-    toString(simplified: boolean) {
+    toString(simplified?: boolean) {
         return this.quality + (simplified ? this.simpleValue : this.value);
     }
 

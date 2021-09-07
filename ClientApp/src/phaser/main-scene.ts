@@ -404,7 +404,7 @@ export default class MainScene extends Phaser.Scene {
         const noteInSemitones = semitonesFromNote(pitchYInSemitones, note);
         const y = noteInSemitones * unit + topOffset
 
-        if (possibleLedgerLines.indexOf(noteInSemitones) !== -1) {
+        if (possibleLedgerLines.includes(noteInSemitones)) {
             const x = this.measureLeftOffset + this.measureWidth * measureNumber + this.measureWidth / 2;
             //console.log(`topOffset: ${topOffset} | x: ${x} | y: ${y} | note: ${note.toString()}`);
 
