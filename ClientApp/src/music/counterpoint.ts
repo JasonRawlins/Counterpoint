@@ -1,4 +1,4 @@
-import { Clef, Note, Rest } from "./core";
+import { Clef, Interval, Note, Rest } from "./core";
 
 export class Voice {
     notes: Note[];
@@ -72,6 +72,12 @@ export class Exercise {
             this.top = cantusFirmus;
             this.bottom = this.counterpoint;
         }
+    }
+
+    intervalAt(measureNumber: number) {
+        const cantusFirmusNote = this.cantusFirmus.notes[measureNumber];
+        const counterpointNote = this.counterpoint.notes[measureNumber];
+        return new Interval(cantusFirmusNote, counterpointNote);
     }
 
     reset() {

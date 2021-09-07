@@ -48,6 +48,7 @@
     <TypeScriptCompile Remove="ClientApp\src\index.tsx" />
     <TypeScriptCompile Remove="ClientApp\src\music\core.test.ts" />
     <TypeScriptCompile Remove="ClientApp\src\music\counterpoint.test.ts" />
+    <TypeScriptCompile Remove="ClientApp\src\music\validation.ts" />
     <TypeScriptCompile Remove="ClientApp\src\phaser\game.ts" />
     <TypeScriptCompile Remove="ClientApp\src\phaser\main-scene.ts" />
     <TypeScriptCompile Remove="ClientApp\src\react-app-env.d.ts" />
