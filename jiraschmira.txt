@@ -2,14 +2,14 @@
 -------
 Figure out how to mix and match notes with rests.
 Make all state changes and then render counterpoint. (i.e. render the screen fresh from the counterpoint data).
-
+Get better audio samples
 
 Current
 -------
-Create validation for parallel octaves. Also write tests.
 
 Done
 ----
+Create validation for parallel octaves and fifths.
 Render ledger lines on counterpoint note.
 Render ledger lines for ghost note.
 Play the exercise audio.

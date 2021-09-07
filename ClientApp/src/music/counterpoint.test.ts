@@ -11,8 +11,8 @@ describe("Parallel fifths and octaves", () => {
 
     it("should detect parallel fifths", () => {
         const exercise = createExercise("a4 g4", "e5 d5");
-        const hasParallelFifths = validation.getParallelFifths(exercise);
-        expect(hasParallelFifths).toBe(true);
+        const measures = validation.getParallelFifths(exercise);
+        expect(measures.length > 0).toBe(true);
     });
 });
 

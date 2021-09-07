@@ -2,6 +2,7 @@ import * as Phaser from "phaser";
 //import * as dat from "dat.gui";
 import { Exercise, Voice, VoicePosition } from "../music/counterpoint";
 import { Clef, Interval, Key, Note } from "../music/core";
+import * as validation from "../music/validation";
 
 const screenSize = { width: 675, height: 200 };
 const wholeNoteHeight = 12; // The height of the whole note image in pixels. 
@@ -99,6 +100,7 @@ const constants = {
         MEASURE: "measure",
         NOTE: "note",
         PITCH: "pitch",
+        VALIDATION_MARKUP: "validation-markup",
         WHOLE_NOTE: "whole-note"
     }
 };
@@ -124,7 +126,7 @@ export default class MainScene extends Phaser.Scene {
 
     private exercise = new Exercise(Key.c,
         new Voice(VoicePosition.bottom, Clef.alto, "c4 e4 d4 f4", true),
-        new Voice(VoicePosition.top, Clef.treble, "c5 e5 d5 f5")
+        new Voice(VoicePosition.top, Clef.treble, "g4 b4 d5 f5")
     );
 
     private measureLeftOffset = 70;
@@ -358,8 +360,6 @@ export default class MainScene extends Phaser.Scene {
                     noteGameObjects[0].destroy();
                 }
 
-                //this.renderLedgerLines();
-
                 this.mainContainer.add(this.renderNote(measureCenterX, pitchInPixels, { number: measureNumber, note: note, isCantusFirmus: false }));
             });
         });
@@ -416,38 +416,21 @@ export default class MainScene extends Phaser.Scene {
     }
 
     validateExercise() {
-        const exercise = this.exercise;
+        this.mainContainer.list.filter(gameObject => {
+            if (gameObject.name.includes(constants.terms.VALIDATION_MARKUP)) {
+                gameObject.destroy();
+            }
+        });
 
-        validateParallelOctaves();
-
-        function validateParallelOctaves() {
-            exercise.cantusFirmus.notes.forEach((currentCantusFirmusNote: Note, measureNumber: number) => {
-                if (measureNumber + 1 < exercise.length) {
-                    const nextCantusFirmusNote = exercise.cantusFirmus.notes[measureNumber + 1];
-                    const currentCounterpointNote = exercise.counterpoint.notes[measureNumber];
-                    const nextCounterpointNote = exercise.counterpoint.notes[measureNumber + 1];
-
-                    //if (currentCantusFirmusNote && nextCantusFirmusNote && currentCounterpointNote && nextCounterpointNote) {
-
-                    const firstInterval = new Interval(currentCantusFirmusNote, nextCantusFirmusNote);
-                    const secondInterval = new Interval(currentCounterpointNote, nextCounterpointNote);
-
-                    console.log(
-                        `measureNumber: ${measureNumber} | 
-cf1: ${currentCantusFirmusNote} | 
-cp1: ${currentCounterpointNote} |
-int1: ${firstInterval} |
-cf2: ${nextCantusFirmusNote} | 
-cp2: ${nextCounterpointNote} |
-int2: ${secondInterval}`);
-
-                    if (firstInterval.isOctave() && secondInterval.isOctave()) {
-                        console.log(`parallel octaves in measures ${measureNumber} and ${measureNumber + 1}`);
-                    }
-                    //}
-                }
-            });
-        }
+        validation.getParallelFifths(this.exercise).forEach(measureNumber => {
+            const x1 = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber + (this.measureWidth / 2);
+            const x2 = x1 + this.measureWidth;
+            const y1 = 50; /// find the vertical position of the note in the measure. 
+            const y2 = 40;
+            const errorLine = this.add.line(0, 0, x1, 50, x2, 40, 0xFF0000).setOrigin(0);
+            errorLine.name += constants.terms.VALIDATION_MARKUP;
+            this.mainContainer.add(errorLine);
+        });
     }
 
     renderDiagnosticsScreen() {
