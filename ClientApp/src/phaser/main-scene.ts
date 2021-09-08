@@ -97,7 +97,7 @@ const constants = {
     terms: {
         GHOST_NOTE: "ghost-note",
         LEDGER_LINE: "ledger-line",
-        MEASURE: "measure",
+        MEASURE_DATA: "measure-data",
         NOTE: "note",
         PITCH: "pitch",
         VALIDATION_MARKUP: "validation-markup",
@@ -105,10 +105,8 @@ const constants = {
     }
 };
 
-interface MeasureData {
-    note: Note,
-    number: number,
-    isCantusFirmus: boolean
+class MeasureData {
+    constructor(public note: Note, public number: number, public isCantusFirmus: boolean) { }
 }
 
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
@@ -289,7 +287,7 @@ export default class MainScene extends Phaser.Scene {
                 this.mainContainer.add(line);
             }
 
-            const measureCantusFirmusNote = this.renderNote(measureCenterX, noteY, { number: measureNumber, note: note, isCantusFirmus: true })
+            const measureCantusFirmusNote = this.renderNote(measureCenterX, noteY, new MeasureData(note, measureNumber, true));
             this.mainContainer.add(measureCantusFirmusNote);
         });
 
@@ -301,8 +299,7 @@ export default class MainScene extends Phaser.Scene {
 
             measureDisplay.setInteractive();
             measureDisplay.setAlpha(0.2);
-            measureDisplay.name = `measure ${measureNumber} | note ${note.toString()}`;
-            measureDisplay.setData(constants.terms.MEASURE, { number: measureNumber, note: note });
+            measureDisplay.setData(constants.terms.MEASURE_DATA, new MeasureData(note, measureNumber, false));
 
             this.mainContainer.add(measureDisplay);
 
@@ -314,7 +311,7 @@ export default class MainScene extends Phaser.Scene {
 
             const counterpointNote = this.exercise.counterpoint.notes[measureNumber];
             if (counterpointNote) {
-                const measureCounterpointNote = this.renderNote(measureCenterX, noteY, { number: measureNumber, note: note, isCantusFirmus: false })
+                const measureCounterpointNote = this.renderNote(measureCenterX, noteY, new MeasureData(note, measureNumber, false))
                 this.mainContainer.add(measureCounterpointNote);
             }
 
@@ -327,9 +324,9 @@ export default class MainScene extends Phaser.Scene {
                     this.ghostNoteImage.destroy();
                 }
 
-                this.ghostNoteImage = this.renderNote(measureCenterX, pitchInPixels, { number: measureNumber, note: note, isCantusFirmus: false });
+                this.ghostNoteImage = this.renderNote(measureCenterX, pitchInPixels, new MeasureData(note, measureNumber, false));
 
-                this.ghostNoteImage.name = constants.terms.GHOST_NOTE;
+                this.ghostNoteImage.name += constants.terms.GHOST_NOTE;
                 this.ghostNoteImage.alpha = 0.5;
                 this.mainContainer.add(this.ghostNoteImage);
             });
@@ -348,30 +345,41 @@ export default class MainScene extends Phaser.Scene {
                 const placedNoteSound = this.sound.add(note.toString());
                 placedNoteSound.play();
 
-                const noteGameObjects = this.mainContainer.list.filter(gameObject => {
-                    if (gameObject.name !== constants.terms.NOTE)
-                        return false;
-
-                    const measureData = gameObject.getData(constants.terms.MEASURE) as MeasureData;
-                    return measureData && measureData.number === measureNumber && !measureData.isCantusFirmus;
-                });
+                const noteGameObjects = this.getNoteGameObjects(measureNumber);
 
                 if (noteGameObjects.length > 0) {
                     noteGameObjects[0].destroy();
                 }
 
-                this.mainContainer.add(this.renderNote(measureCenterX, pitchInPixels, { number: measureNumber, note: note, isCantusFirmus: false }));
+                this.mainContainer.add(this.renderNote(measureCenterX, pitchInPixels, new MeasureData(note, measureNumber, false)));
             });
         });
     }
 
-    renderNote(x: number, y: number, measure: MeasureData) {
-        // What is 2? Just pixel pushing?
-        const note = this.add.image(x + 2, y, "musical-symbols", "whole-note.png").setOrigin(0);
-        note.name = constants.terms.NOTE;
-        note.setData(constants.terms.MEASURE, measure);
+    getNoteGameObjects(measureNumber?: number) {
+        return this.mainContainer.list.filter(gameObject => {
+            if (!gameObject.name.includes(constants.terms.NOTE))
+                return false;
 
-        return note;
+            const measureData = gameObject.getData(constants.terms.MEASURE_DATA) as MeasureData;
+
+            if (!measureData)
+                return false;
+
+            if (measureNumber !== undefined && measureNumber !== measureData.number)
+                return false;
+
+            return !measureData.isCantusFirmus;
+        }) as Phaser.GameObjects.Image[];
+    }
+
+    renderNote(x: number, y: number, measureData: MeasureData) {
+        // What is 2? Just pixel pushing?
+        const noteImage = this.add.image(x + 2, y, "musical-symbols", "whole-note.png").setOrigin(0);
+        noteImage.name += constants.terms.NOTE;
+        noteImage.setData(constants.terms.MEASURE_DATA, measureData);
+
+        return noteImage;
     }
 
     renderLedgerLines() {
@@ -383,7 +391,7 @@ export default class MainScene extends Phaser.Scene {
         });
 
         if (this.ghostNoteImage) {
-            const measureData = this.ghostNoteImage.getData(constants.terms.MEASURE) as MeasureData;
+            const measureData = this.ghostNoteImage.getData(constants.terms.MEASURE_DATA) as MeasureData;
 
             if (measureData?.note) {
                 this.renderLedgerLine(pitchYInSemitones.treble, measureData.note, measureData.number, 0, 0.5);
@@ -409,7 +417,7 @@ export default class MainScene extends Phaser.Scene {
             //console.log(`topOffset: ${topOffset} | x: ${x} | y: ${y} | note: ${note.toString()}`);
 
             const ledgerLine = this.add.line(x - 2, y, 0, 0, wholeNoteWidth + 4, 0, 0x000000).setOrigin(0);
-            ledgerLine.name = constants.terms.LEDGER_LINE;
+            ledgerLine.name += constants.terms.LEDGER_LINE;
             ledgerLine.alpha = alpha;
             this.mainContainer.add(ledgerLine);
         }
@@ -423,11 +431,17 @@ export default class MainScene extends Phaser.Scene {
         });
 
         validation.getParallelFifths(this.exercise).forEach(measureNumber => {
+            const firstMeasureNote = this.getNoteGameObjects(measureNumber)[0];
+            const secondMeasureNote = this.getNoteGameObjects(measureNumber + 1)[0];
+
+            console.log(`First  (${firstMeasureNote.x}, ${firstMeasureNote.y}`)
+            console.log(`Second (${secondMeasureNote.x}, ${secondMeasureNote.y}`)
+
             const x1 = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber + (this.measureWidth / 2);
             const x2 = x1 + this.measureWidth;
             const y1 = 50; /// find the vertical position of the note in the measure. 
             const y2 = 40;
-            const errorLine = this.add.line(0, 0, x1, 50, x2, 40, 0xFF0000).setOrigin(0);
+            const errorLine = this.add.line(0, 0, x1, y1, x2, y2, 0xFF0000).setOrigin(0);
             errorLine.name += constants.terms.VALIDATION_MARKUP;
             this.mainContainer.add(errorLine);
         });

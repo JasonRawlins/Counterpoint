@@ -6,6 +6,7 @@ Get better audio samples
 
 Current
 -------
+Render error lines for parallel fifths.
 
 Done
 ----
