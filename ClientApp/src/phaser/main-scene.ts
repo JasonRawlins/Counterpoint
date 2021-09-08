@@ -326,7 +326,7 @@ export default class MainScene extends Phaser.Scene {
 
                 this.ghostNoteImage = this.renderNote(measureCenterX, pitchInPixels, new MeasureData(note, measureNumber, false));
 
-                this.ghostNoteImage.name += constants.terms.GHOST_NOTE;
+                this.ghostNoteImage.name = constants.terms.GHOST_NOTE;
                 this.ghostNoteImage.alpha = 0.5;
                 this.mainContainer.add(this.ghostNoteImage);
             });
@@ -358,7 +358,7 @@ export default class MainScene extends Phaser.Scene {
 
     getNoteGameObjects(measureNumber?: number) {
         return this.mainContainer.list.filter(gameObject => {
-            if (!gameObject.name.includes(constants.terms.NOTE))
+            if (!gameObject.name.includes(constants.terms.NOTE) || gameObject.name.includes(constants.terms.GHOST_NOTE))
                 return false;
 
             const measureData = gameObject.getData(constants.terms.MEASURE_DATA) as MeasureData;
@@ -376,7 +376,7 @@ export default class MainScene extends Phaser.Scene {
     renderNote(x: number, y: number, measureData: MeasureData) {
         // What is 2? Just pixel pushing?
         const noteImage = this.add.image(x + 2, y, "musical-symbols", "whole-note.png").setOrigin(0);
-        noteImage.name += constants.terms.NOTE;
+        noteImage.name = constants.terms.NOTE;
         noteImage.setData(constants.terms.MEASURE_DATA, measureData);
 
         return noteImage;
@@ -417,7 +417,7 @@ export default class MainScene extends Phaser.Scene {
             //console.log(`topOffset: ${topOffset} | x: ${x} | y: ${y} | note: ${note.toString()}`);
 
             const ledgerLine = this.add.line(x - 2, y, 0, 0, wholeNoteWidth + 4, 0, 0x000000).setOrigin(0);
-            ledgerLine.name += constants.terms.LEDGER_LINE;
+            ledgerLine.name = constants.terms.LEDGER_LINE;
             ledgerLine.alpha = alpha;
             this.mainContainer.add(ledgerLine);
         }
@@ -431,20 +431,38 @@ export default class MainScene extends Phaser.Scene {
         });
 
         validation.getParallelFifths(this.exercise).forEach(measureNumber => {
-            const firstMeasureNote = this.getNoteGameObjects(measureNumber)[0];
-            const secondMeasureNote = this.getNoteGameObjects(measureNumber + 1)[0];
-
-            console.log(`First  (${firstMeasureNote.x}, ${firstMeasureNote.y}`)
-            console.log(`Second (${secondMeasureNote.x}, ${secondMeasureNote.y}`)
-
-            const x1 = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber + (this.measureWidth / 2);
-            const x2 = x1 + this.measureWidth;
-            const y1 = 50; /// find the vertical position of the note in the measure. 
-            const y2 = 40;
-            const errorLine = this.add.line(0, 0, x1, y1, x2, y2, 0xFF0000).setOrigin(0);
-            errorLine.name += constants.terms.VALIDATION_MARKUP;
-            this.mainContainer.add(errorLine);
+            this.renderErrorLines(measureNumber, "Parallel fifths");
         });
+
+        validation.getParallelOctaves(this.exercise).forEach(measureNumber => {
+            this.renderErrorLines(measureNumber, "Parallel octaves");
+        });
+    }
+
+    private renderErrorLines(measureNumber: number, errorMessage: string) {
+        const firstMeasureNote = this.getNoteGameObjects(measureNumber)[0];
+        const secondMeasureNote = this.getNoteGameObjects(measureNumber + 1)[0];
+
+        const x1 = firstMeasureNote.x + wholeNoteWidth + 2;
+        const x2 = secondMeasureNote.x - 2;
+        const y1 = firstMeasureNote.y + wholeNoteHeight / 2;
+        const y2 = secondMeasureNote.y + wholeNoteHeight / 2;
+
+        const errorLine = this.add.line(0, 0, x1, y1, x2, y2, 0xFF0000).setOrigin(0);
+        errorLine.name = constants.terms.VALIDATION_MARKUP;
+        this.mainContainer.add(errorLine);
+
+        const errorMessageDisplayRadius = 7;
+        const xMidpoint = (x1 + (x2 - x1) / 2) - errorMessageDisplayRadius;
+        const yMidpoint = (y1 + (y2 - y1) / 2) - errorMessageDisplayRadius;
+
+        const errorMessageDisplay = this.add.circle(xMidpoint, yMidpoint, errorMessageDisplayRadius, 0xFF0000).setOrigin(0);
+        errorMessageDisplay.name = constants.terms.VALIDATION_MARKUP;
+        errorMessageDisplay.setInteractive();
+        errorMessageDisplay.on("pointerover", (pointer) => {
+            this.add.text(xMidpoint, yMidpoint, errorMessage);
+        });
+        this.mainContainer.add(errorMessageDisplay);
     }
 
     renderDiagnosticsScreen() {

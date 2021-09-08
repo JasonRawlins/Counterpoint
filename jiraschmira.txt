@@ -6,10 +6,10 @@ Get better audio samples
 
 Current
 -------
-Render error lines for parallel fifths.
 
 Done
 ----
+Render error lines for parallel fifths and octaves.
 Create validation for parallel octaves and fifths.
 Render ledger lines on counterpoint note.
 Render ledger lines for ghost note.
