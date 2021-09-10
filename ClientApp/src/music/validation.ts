@@ -34,3 +34,12 @@ export function getDissonantIntervals(exercise: Exercise) {
 
     return measures;
 }
+
+export function getHighpoints(exercise: Exercise) {
+    let highpoints: number[] = [];
+
+    exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
+        const counterpointNote = exercise.counterpoint.notes[measureNumber];
+
+    });
+}

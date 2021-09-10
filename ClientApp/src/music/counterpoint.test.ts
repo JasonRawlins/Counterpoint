@@ -18,10 +18,20 @@ describe("Parallel fifths and octaves", () => {
 
 describe("Intervals", () => {
     it("should detect dissonant intervals", () => {
-        const exercise = createExercise("d4 fs4 e4", "g4 e5 fs4");
+        const exercise = createExercise("f4 f4 f4 f4", "g4 b4 e5 a4");
         const dissonantMeasures = validation.getDissonantIntervals(exercise);
         expect(dissonantMeasures.length).toBe(3);
     });
+});
+
+describe("Melodic line", () => {
+    it("should have a single high point", () => {
+        const exercise = createExercise("b3 b3 b3", "d4 f4 d4");
+        const highPointMeasures = validation.getHighpoints(exercise);
+        expect(highPointMeasures.length).toBe(1);
+    });
+
+    
 });
 
 function createExercise(cantusFirmusNotes: string, counterpointNotes: string) {

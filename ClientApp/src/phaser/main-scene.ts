@@ -123,8 +123,8 @@ export default class MainScene extends Phaser.Scene {
     private ghostNoteImage!: Phaser.GameObjects.Image;
 
     private exercise = new Exercise(Key.c,
-        new Voice(VoicePosition.bottom, Clef.alto, "c4 e4 d4 f4", true),
-        new Voice(VoicePosition.top, Clef.treble, "g4 b4 d5 f5")
+        new Voice(VoicePosition.bottom, Clef.alto, "b3 d4 c4 f4", true),
+        new Voice(VoicePosition.top, Clef.treble, "c4 g4 b4 a4")
     );
 
     private measureLeftOffset = 70;
@@ -431,15 +431,19 @@ export default class MainScene extends Phaser.Scene {
         });
 
         validation.getParallelPerfects(this.exercise, 5).forEach(measureNumber => {
-            this.renderParallelPerfectErrorLines(measureNumber, "Parallel\nfifths");
+            this.renderParallelPerfectErrors(measureNumber, "Parallel\nfifths");
         });
 
         validation.getParallelPerfects(this.exercise, 8).forEach(measureNumber => {
-            this.renderParallelPerfectErrorLines(measureNumber, "Parallel\noctaves");
+            this.renderParallelPerfectErrors(measureNumber, "Parallel\noctaves");
+        });
+
+        validation.getDissonantIntervals(this.exercise).forEach(measureNumber => {
+            this.renderDissonantIntervalErrors(measureNumber, "Dissonant");
         });
     }
 
-    private renderParallelPerfectErrorLines(measureNumber: number, errorMessage: string) {
+    private renderParallelPerfectErrors(measureNumber: number, errorMessage: string) {
         const firstMeasureNote = this.getNoteGameObjects(measureNumber)[0];
         const secondMeasureNote = this.getNoteGameObjects(measureNumber + 1)[0];
 
@@ -459,16 +463,19 @@ export default class MainScene extends Phaser.Scene {
         const errorMessageDisplay = this.add.circle(xMidpoint, yMidpoint, errorMessageDisplayRadius, 0xFF0000).setOrigin(0);
         errorMessageDisplay.name = constants.terms.VALIDATION_MARKUP;
         errorMessageDisplay.setInteractive();
+        this.mainContainer.add(errorMessageDisplay);
+
         let errorMessagePopup = this.add.text(xMidpoint, yMidpoint, errorMessage);
         errorMessagePopup.name = constants.terms.VALIDATION_MARKUP;
-        errorMessageDisplay.on("pointerover", () => {
-            console.log("pointerover");
-            this.mainContainer.add(errorMessagePopup);
-        });
-        errorMessageDisplay.on("pointerout", () => {
-            console.log("pointerout");
-            errorMessagePopup.destroy();
-        });
+        this.mainContainer.add(errorMessagePopup);
+    }
+
+    private renderDissonantIntervalErrors(measureNumber: number, errorMessage: string) {
+        const x = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
+        const y = 5;
+        const errorMessageText = this.add.text(x, y, errorMessage);
+        errorMessageText.name = constants.terms.VALIDATION_MARKUP;
+        this.mainContainer.add(errorMessageText);
     }
 
     renderDiagnosticsScreen() {

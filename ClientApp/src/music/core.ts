@@ -125,7 +125,7 @@ export class Interval {
     }
 
     isDissonant() {
-        return this.isSecond() || this.isFourth || this.isSeventh();
+        return this.isSecond() || this.isFourth() || this.isSeventh();
     }
 
     isUnison() {
@@ -236,6 +236,17 @@ export class Note implements Duration {
 
         this.midiNumber = (MidiNumber as any)[this.letter + this.accidental + this.octave];
         this.scaleIndex = Key.c.indexOf(this.letter);
+    }
+
+    compareTo(otherNote: Note) {
+        if (this.equals(otherNote))
+            return 0;
+
+        if (this.octave <= otherNote.octave && this.scaleIndex < otherNote.scaleIndex)
+            return -1;
+
+        if (this.octave >= otherNote.octave && this.scaleIndex > otherNote.scaleIndex)
+            return 1;
     }
 
     equals(otherNote: Note | string, ignoreOctave?: boolean) {
