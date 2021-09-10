@@ -124,6 +124,10 @@ export class Interval {
         return Interval.isInterval(this.value, [7, 14, 21, 28, 35, 42, 49, 56], simplified);
     }
 
+    isDissonant() {
+        return this.isSecond() || this.isFourth || this.isSeventh();
+    }
+
     isUnison() {
         return this.value === 1;
     }

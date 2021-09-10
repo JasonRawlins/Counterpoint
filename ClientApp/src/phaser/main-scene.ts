@@ -430,16 +430,16 @@ export default class MainScene extends Phaser.Scene {
             }
         });
 
-        validation.getParallelFifths(this.exercise).forEach(measureNumber => {
-            this.renderErrorLines(measureNumber, "Parallel fifths");
+        validation.getParallelPerfects(this.exercise, 5).forEach(measureNumber => {
+            this.renderParallelPerfectErrorLines(measureNumber, "Parallel\nfifths");
         });
 
-        validation.getParallelOctaves(this.exercise).forEach(measureNumber => {
-            this.renderErrorLines(measureNumber, "Parallel octaves");
+        validation.getParallelPerfects(this.exercise, 8).forEach(measureNumber => {
+            this.renderParallelPerfectErrorLines(measureNumber, "Parallel\noctaves");
         });
     }
 
-    private renderErrorLines(measureNumber: number, errorMessage: string) {
+    private renderParallelPerfectErrorLines(measureNumber: number, errorMessage: string) {
         const firstMeasureNote = this.getNoteGameObjects(measureNumber)[0];
         const secondMeasureNote = this.getNoteGameObjects(measureNumber + 1)[0];
 
@@ -459,10 +459,16 @@ export default class MainScene extends Phaser.Scene {
         const errorMessageDisplay = this.add.circle(xMidpoint, yMidpoint, errorMessageDisplayRadius, 0xFF0000).setOrigin(0);
         errorMessageDisplay.name = constants.terms.VALIDATION_MARKUP;
         errorMessageDisplay.setInteractive();
-        errorMessageDisplay.on("pointerover", (pointer) => {
-            this.add.text(xMidpoint, yMidpoint, errorMessage);
+        let errorMessagePopup = this.add.text(xMidpoint, yMidpoint, errorMessage);
+        errorMessagePopup.name = constants.terms.VALIDATION_MARKUP;
+        errorMessageDisplay.on("pointerover", () => {
+            console.log("pointerover");
+            this.mainContainer.add(errorMessagePopup);
         });
-        this.mainContainer.add(errorMessageDisplay);
+        errorMessageDisplay.on("pointerout", () => {
+            console.log("pointerout");
+            errorMessagePopup.destroy();
+        });
     }
 
     renderDiagnosticsScreen() {
