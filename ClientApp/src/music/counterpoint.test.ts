@@ -32,7 +32,7 @@ describe("Melodic line", () => {
     });
 
     it("should detect multiple high points", () => {
-        const exercise = createExercise("a3 f3 b3", "e4, d4, e4");
+        const exercise = createExercise("a3 f3 b3", "e4 d4 e4");
         const highpoints = validation.getHighpoints(exercise);
         expect(highpoints.length).toBe(2);
     });

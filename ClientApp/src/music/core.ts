@@ -217,6 +217,7 @@ interface Duration {
 
 export class Note implements Duration {
     accidental = "";
+    accidentalValue = 0;
     letter: string;
     midiNumber: MidiNumber;
     octave: number;
@@ -234,20 +235,26 @@ export class Note implements Duration {
             this.octave = parseInt(noteParts[2], 10);
         }
 
+        if (this.accidental === "s") {
+            this.accidentalValue = 1;
+        }
+
+        if (this.accidental === "f") {
+            this.accidentalValue = -1;
+        }
+
         this.midiNumber = (MidiNumber as any)[this.letter + this.accidental + this.octave];
         this.scaleIndex = Key.c.indexOf(this.letter);
     }
 
-    compareTo(otherNote: Note) {
-        if (this.equals(otherNote)) {
-            return 0;
+    compareTo(otherNote: Note, ignoreOctave = false) {
+        if (!ignoreOctave) {
+            if (this.octave < otherNote.octave)
+                return -1;
+
+            if (this.octave > otherNote.octave)
+                return 1;
         }
-
-        if (this.octave < otherNote.octave)
-            return -1;
-
-        if (this.octave > otherNote.octave)
-            return 1;
 
         // Both notes are the same octave now. 
 
@@ -259,24 +266,13 @@ export class Note implements Duration {
 
         // Both notes are the same scale index now.
 
-        if (this.getAccidentalCompareValue(this.accidental) < this.getAccidentalCompareValue(otherNote.accidental))
+        if (this.accidentalValue < otherNote.accidentalValue)
             return -1
 
-        if (this.getAccidentalCompareValue(this.accidental) > this.getAccidentalCompareValue(otherNote.accidental))
+        if (this.accidentalValue > otherNote.accidentalValue)
             return 1
 
-        throw "Error detecting compare value.";
-    }
-
-    private getAccidentalCompareValue(accidental: string) {
-        switch (accidental) {
-            case "b":
-                return -1;
-            case "s":
-                return 1;
-            default:
-                return 0;
-        }
+        return 0;
     }
 
     equals(otherNote: Note | string, ignoreOctave?: boolean) {
@@ -292,13 +288,7 @@ export class Note implements Duration {
             internalOtherNote = otherNote;
         }
 
-        const notesEqual = this.letter === internalOtherNote.letter && this.accidental === internalOtherNote.accidental;
-
-        if (ignoreOctave) {
-            return notesEqual;
-        } else {
-            return notesEqual && this.octave === internalOtherNote.octave;
-        }
+        return this.compareTo(internalOtherNote, ignoreOctave) === 0;        
     }
 
     subtract(intervalValue: number) {
