@@ -239,14 +239,44 @@ export class Note implements Duration {
     }
 
     compareTo(otherNote: Note) {
-        if (this.equals(otherNote))
+        if (this.equals(otherNote)) {
             return 0;
+        }
 
-        if (this.octave <= otherNote.octave && this.scaleIndex < otherNote.scaleIndex)
+        if (this.octave < otherNote.octave)
             return -1;
 
-        if (this.octave >= otherNote.octave && this.scaleIndex > otherNote.scaleIndex)
+        if (this.octave > otherNote.octave)
             return 1;
+
+        // Both notes are the same octave now. 
+
+        if (this.scaleIndex < otherNote.scaleIndex)
+            return -1;
+
+        if (this.scaleIndex > otherNote.scaleIndex)
+            return 1;
+
+        // Both notes are the same scale index now.
+
+        if (this.getAccidentalCompareValue(this.accidental) < this.getAccidentalCompareValue(otherNote.accidental))
+            return -1
+
+        if (this.getAccidentalCompareValue(this.accidental) > this.getAccidentalCompareValue(otherNote.accidental))
+            return 1
+
+        throw "Error detecting compare value.";
+    }
+
+    private getAccidentalCompareValue(accidental: string) {
+        switch (accidental) {
+            case "b":
+                return -1;
+            case "s":
+                return 1;
+            default:
+                return 0;
+        }
     }
 
     equals(otherNote: Note | string, ignoreOctave?: boolean) {

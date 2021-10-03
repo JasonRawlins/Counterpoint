@@ -14,6 +14,39 @@ describe("Intervals", () => {
     it("should be a major sixth", () => { testInterval("ef4", "c5", "M", 6); });
     it("should be a minor seventh", () => { testInterval("e3", "d4", "m", 7); });
     it("should be a major seventh", () => { testInterval("e3", "ds4", "M", 7); });
+    it("should be an octave", () => { testInterval("a3", "a4", "P", 8); });
+});
+
+describe("Comparing notes", () => {
+    it("should detect equal notes", () => {
+        const note1 = new Note("f3");
+        const note2 = new Note("f3");
+
+        expect(note1.compareTo(note2) === 0);
+    });
+
+    it("should detect a lower note by octave", () => {
+        const note1 = new Note("a3");
+        const note2 = new Note("a4");
+
+        expect(note1.compareTo(note2) === -1);
+    });
+
+    it("should detect a higher note by octave", () => {
+        const note1 = new Note("a4");
+        const note2 = new Note("a3");
+
+        expect(note1.compareTo(note2) === 1)
+    });
+
+    it("should detecct a lower note by scale index.", () => {
+        const note1 = new Note("a4");
+        const note2 = new Note("b4");
+
+        expect(note1.compareTo(note2) === -1)
+    });
+
+    
 });
 
 function testInterval(note1: string, note2: string, quality: string, value: number) {
