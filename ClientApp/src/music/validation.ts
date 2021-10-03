@@ -1,3 +1,4 @@
+import { Note } from "./core";
 import { Exercise } from "./counterpoint";
 
 export function getParallelPerfects(exercise: Exercise, interval: number) {
@@ -36,10 +37,27 @@ export function getDissonantIntervals(exercise: Exercise) {
 }
 
 export function getHighpoints(exercise: Exercise) {
-    let highpoints: number[] = [];
+    let highpoints: Note[] = [];
+
+    console.log("getHighpoints");
+
+    let highNote = new Note("a0");
+    // Octave and letter and accidental
+    exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
+        const counterpointNote = exercise.counterpoint.notes[measureNumber];
+        if (counterpointNote.compareTo(highNote) === 1) {
+            highNote = counterpointNote;
+        }
+    });
+
+    console.log(`High point: ${highNote.toString(true)}`)
 
     exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
         const counterpointNote = exercise.counterpoint.notes[measureNumber];
-
+        if (counterpointNote.equals(highNote)) {
+            highpoints.push(counterpointNote);
+        }
     });
+
+    return highpoints;
 }

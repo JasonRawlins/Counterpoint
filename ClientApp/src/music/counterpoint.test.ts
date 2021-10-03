@@ -26,12 +26,16 @@ describe("Intervals", () => {
 
 describe("Melodic line", () => {
     it("should have a single high point", () => {
-        const exercise = createExercise("b3 b3 b3", "d4 f4 d4");
+        const exercise = createExercise("b3 b3 b3", "d4 f4 c4");
         const highPointMeasures = validation.getHighpoints(exercise);
         expect(highPointMeasures.length).toBe(1);
     });
 
-    
+    it("should detect multiple high points", () => {
+        const exercise = createExercise("a3 f3 b3", "e4, d4, e4");
+        const highpoints = validation.getHighpoints(exercise);
+        expect(highpoints.length).toBe(2);
+    });
 });
 
 function createExercise(cantusFirmusNotes: string, counterpointNotes: string) {
