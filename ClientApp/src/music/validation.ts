@@ -18,9 +18,9 @@ export function getParallelPerfects(exercise: Exercise, interval: number) {
                 (interval === 5 && firstInterval.isFifth() && secondInterval.isFifth()) ||
                 (interval === 8 && firstInterval.isOctave() && secondInterval.isOctave());
 
-            if (isParallelPerfect) {
-                measures.push({ number: measureNumber, interval });
-            }
+            //if (isParallelPerfect) {
+            //    measures.push({ number: measureNumber, interval });
+            //}
         }
     });
 
@@ -63,9 +63,9 @@ export function getDissonantIntervals(exercise: Exercise) {
     exercise.cantusFirmus.notes.forEach((note, measureNumber) => {
         const interval = exercise.intervalAt(measureNumber);
 
-        if (interval.isDissonant()) {
-            measures.push({ number: measureNumber, interval });
-        }
+        //if (interval.isDissonant()) {
+        //    measures.push({ number: measureNumber, interval });
+        //}
     });
 
     return measures;

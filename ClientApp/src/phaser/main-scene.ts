@@ -430,17 +430,17 @@ export default class MainScene extends Phaser.Scene {
             }
         });
 
-        validation.getParallelPerfects(this.exercise, 5).forEach(measureNumber => {
-            this.renderParallelPerfectErrors(measureNumber, "Parallel\nfifths");
-        });
+        //validation.getParallelPerfects(this.exercise, 5).forEach(measureNumber => {
+        //    this.renderParallelPerfectErrors(measureNumber, "Parallel\nfifths");
+        //});
 
-        validation.getParallelPerfects(this.exercise, 8).forEach(measureNumber => {
-            this.renderParallelPerfectErrors(measureNumber, "Parallel\noctaves");
-        });
+        //validation.getParallelPerfects(this.exercise, 8).forEach(measureNumber => {
+        //    this.renderParallelPerfectErrors(measureNumber, "Parallel\noctaves");
+        //});
 
-        validation.getDissonantIntervals(this.exercise).forEach(measureNumber => {
-            this.renderDissonantIntervalErrors(measureNumber, "Dissonant");
-        });
+        //validation.getDissonantIntervals(this.exercise).forEach(measureNumber => {
+        //    this.renderDissonantIntervalErrors(measureNumber, "Dissonant");
+        //});
     }
 
     private renderParallelPerfectErrors(measureNumber: number, errorMessage: string) {

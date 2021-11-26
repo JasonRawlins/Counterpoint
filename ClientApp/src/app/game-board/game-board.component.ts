@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import * as Phaser from "phaser";
+import * as Phaser from "phaser"; import { zip } from 'rxjs';
+import MainScene from "../../phaser/main-scene";
 
 @Component({
   selector: 'app-game-board',
@@ -12,36 +13,28 @@ export class GameBoardComponent implements OnInit {
 
   constructor() {
     this.config = {
+      title: "Counterpoint",
       type: Phaser.AUTO,
-      height: 600,
-      width: 800,
-      scene: [MainScene],
-      parent: 'gameContainer',
+      scale: {
+        width: 800,
+        height: 300
+      },
       physics: {
-        default: 'arcade',
+        default: "arcade",
         arcade: {
-          gravity: { y: 100 }
+          debug: true
         }
+      },
+      parent: "phaser",
+      backgroundColor: "#ebd5b3",
+      scene: MainScene,
+      audio: {
+        disableWebAudio: true
       }
     };
   }
 
   ngOnInit(): void {
     this.phaserGame = new Phaser.Game(this.config);
-  }
-}
-
-class MainScene extends Phaser.Scene {
-  constructor() {
-    super({ key: 'main' });
-  }
-  create() {
-    console.log('create method');
-  }
-  preload() {
-    console.log('preload method');
-  }
-  update() {
-    console.log('update method');
   }
 }
