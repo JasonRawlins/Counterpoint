@@ -62,21 +62,21 @@ export class Interval {
     simpleValue: number;
     value: number;
 
-    constructor(public referenceNote: Note, public comparisonNote: Note) {
-        if (comparisonNote.midiNumber < referenceNote.midiNumber) {
-            const temp = comparisonNote;
-            this.comparisonNote = referenceNote;
-            this.referenceNote = temp;
+    constructor(public bottomNote: Note, public topNote: Note) {
+        if (topNote.midiNumber < bottomNote.midiNumber) {
+            const temp = topNote;
+            this.topNote = bottomNote;
+            this.bottomNote = temp;
         }
 
-        const referenceNoteScaleDegree = Key.c.indexOf(referenceNote.letter);
-        const comparisonNoteScaleDegree = Key.c.indexOf(comparisonNote.letter);
-        const octaveDifference = comparisonNote.octave - referenceNote.octave;
+        const referenceNoteScaleDegree = Key.c.indexOf(bottomNote.letter);
+        const comparisonNoteScaleDegree = Key.c.indexOf(topNote.letter);
+        const octaveDifference = topNote.octave - bottomNote.octave;
         this.value = comparisonNoteScaleDegree - referenceNoteScaleDegree + 1 + (IntervalConstant.octaveInSteps * octaveDifference);
-        const simpleInterval = Interval.getSimpleInterval(referenceNote, comparisonNote, this.value);
+        const simpleInterval = Interval.getSimpleInterval(bottomNote, topNote, this.value);
         this.simpleValue = simpleInterval.value;
         this.simpleComparisonNote = simpleInterval.comparisonNote;
-        this.quality = Interval.getQuality(referenceNote, this.simpleComparisonNote, this.simpleValue);
+        this.quality = Interval.getQuality(bottomNote, this.simpleComparisonNote, this.simpleValue);
     }
 
     equals(otherInterval: Interval | string, simplified: boolean): boolean {
@@ -245,6 +245,14 @@ export class Note implements Duration {
 
         this.midiNumber = (MidiNumber as any)[this.letter + this.accidental + this.octave];
         this.scaleIndex = Key.c.indexOf(this.letter);
+    }
+
+    isHigherThan(otherNote: Note) {
+        return this.compareTo(otherNote) === 1;
+    }
+
+    isLowerThan(otherNote: Note) {
+        return this.compareTo(otherNote) === -1;
     }
 
     compareTo(otherNote: Note, ignoreOctave = false) {

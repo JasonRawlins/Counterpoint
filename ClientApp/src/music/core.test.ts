@@ -40,12 +40,16 @@ describe("Comparing notes", () => {
         testCompareTo("a4", "a3", 1);
     });
 
-    it("should detecct a lower note by scale index.", () => {
+    it("should detect a lower note by scale index", () => {
         testCompareTo("a4", "b4", -1);
     });
 
-    it("should detecct a lower note by accidental.", () => {
+    it("should detect a lower note by accidental", () => {
         testCompareTo("f4", "fs4", -1);
+    });
+
+    it("should detect a higher note by accidental", () => {
+        testCompareTo("fs4", "f4", 1)
     });
 
     function testCompareTo(note1: string, note2: string, expectedReturnValue: number, ignoreOctave = false) {
