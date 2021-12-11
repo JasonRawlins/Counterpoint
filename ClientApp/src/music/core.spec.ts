@@ -1,4 +1,6 @@
 ﻿import { Interval, Note } from "./core";
+import * as validation from "./validation";
+import { createExercise } from "./test-helper";
 
 describe("Intervals", () => {
     it("should be a unison", () => { testInterval("a4", "a4", "P", 1); });
@@ -16,6 +18,36 @@ describe("Intervals", () => {
     it("should be a major seventh", () => { testInterval("e3", "ds4", "M", 7); });
     it("should be an octave", () => { testInterval("a3", "a4", "P", 8); });
 
+    it("should find unisons", () => {
+        const exercise = createExercise("a5 d4 f4", "c6 d4 f4");
+        const unisons = validation.getUnisons(exercise);
+        expect(unisons.length).toBe(2);
+    });
+
+    it("should find seconds", () => {
+        const exercise = createExercise("d4 gs4 f4", "e4 a4 f4");
+        const dissonantMeasures = validation.getSeconds(exercise);
+        expect(dissonantMeasures.length).toBe(2);
+    });
+
+    it("should find thirds", () => {
+        const exercise = createExercise("ef4 cs4 a4", "g4 f4 cs5");
+        const dissonantMeasures = validation.getThirds(exercise);
+        expect(dissonantMeasures.length).toBe(2);
+    });
+
+    it("should find fourths", () => {
+        const exercise = createExercise("ef4 cs4 a4", "a4 f4 ds5");
+        const dissonantMeasures = validation.getFourths(exercise);
+        expect(dissonantMeasures.length).toBe(3);
+    });
+
+    it("should find fifths", () => {
+        const exercise = createExercise("ef4 cs4 a4", "a4 gs4 es5");
+        const dissonantMeasures = validation.getFifths(exercise);
+        expect(dissonantMeasures.length).toBe(2);
+    });
+
     function testInterval(note1: string, note2: string, quality: string, value: number) {
         const referenceNote = new Note(note1);
         const comparisonNote = new Note(note2);
@@ -29,33 +61,33 @@ describe("Intervals", () => {
 
 describe("Comparing notes", () => {
     it("should detect equal notes", () => {
-        testCompareTo("f3", "f3", 0);
+        expect(testCompareTo("f3", "f3")).toBe(0);
     });
 
     it("should detect a lower note by octave", () => {
-        testCompareTo("a3", "a4", -1);
+        expect(testCompareTo("a3", "a4")).toBe(-1);
     });
 
     it("should detect a higher note by octave", () => {
-        testCompareTo("a4", "a3", 1);
+        expect(testCompareTo("a4", "a3")).toBe(1);
     });
 
     it("should detect a lower note by scale index", () => {
-        testCompareTo("a4", "b4", -1);
+        expect(testCompareTo("a4", "b4")).toBe(-1);
     });
 
     it("should detect a lower note by accidental", () => {
-        testCompareTo("f4", "fs4", -1);
+        expect(testCompareTo("f4", "fs4",)).toBe(-1);
     });
 
     it("should detect a higher note by accidental", () => {
-        testCompareTo("fs4", "f4", 1)
+        expect(testCompareTo("fs4", "f4")).toBe(1);
     });
 
-    function testCompareTo(note1: string, note2: string, expectedReturnValue: number, ignoreOctave = false) {
+    function testCompareTo(note1: string, note2: string, ignoreOctave = false) {
         const internalNote1 = new Note(note1);
         const internalNote2 = new Note(note2);
 
-        expect(internalNote1.compareTo(internalNote2, ignoreOctave) === expectedReturnValue)
+        return internalNote1.compareTo(internalNote2, ignoreOctave)
     }
 });

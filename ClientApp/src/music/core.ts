@@ -100,36 +100,44 @@ export class Interval {
         }
     }
 
-    isFifth(simplified?: boolean) {
-        return Interval.isInterval(this.value, [5, 12, 19, 26, 33, 40, 47, 54], simplified);
+    isPerfectConsonance() {
+        return this.quality === intervalQualities.perfect && !this.isFourth();
+    }
+
+    isDissonant() {
+        return this.isSecond() || this.isFourth() || this.isSeventh();
+    }
+    
+    isUnison() {
+        return this.value === 1;
+    }
+    
+    isSecond(simplified?: boolean) {
+        return Interval.isInterval(this.value, [2, 9, 16, 23, 30, 37, 44, 51], simplified);
+    }
+
+    isThird(simplified?: boolean) {
+        return Interval.isInterval(this.value, [3, 10, 17, 24, 31, 38, 45, 52], simplified);
     }
 
     isFourth(simplified?: boolean) {
         return Interval.isInterval(this.value, [4, 11, 18, 25, 32, 39, 46, 53], simplified);
     }
 
-    isOctave(simplified?: boolean) {
-        return Interval.isInterval(this.value, [8, 15, 22, 29, 36, 43, 50, 57], simplified);
+    isFifth(simplified?: boolean) {
+        return Interval.isInterval(this.value, [5, 12, 19, 26, 33, 40, 47, 54], simplified);
     }
 
-    isPerfectConsonance() {
-        return this.quality === intervalQualities.perfect && !this.isFourth();
-    }
-
-    isSecond(simplified?: boolean) {
-        return Interval.isInterval(this.value, [2, 9, 16, 23, 30, 37, 44, 51], simplified);
+    isSixth(simplified?: boolean) {
+        return Interval.isInterval(this.value, [6, 13, 20, 27, 34, 41, 48, 55], simplified);
     }
 
     isSeventh(simplified?: boolean) {
         return Interval.isInterval(this.value, [7, 14, 21, 28, 35, 42, 49, 56], simplified);
     }
 
-    isDissonant() {
-        return this.isSecond() || this.isFourth() || this.isSeventh();
-    }
-
-    isUnison() {
-        return this.value === 1;
+    isOctave(simplified?: boolean) {
+        return Interval.isInterval(this.value, [8, 15, 22, 29, 36, 43, 50, 57], simplified);
     }
 
     toString(simplified?: boolean) {

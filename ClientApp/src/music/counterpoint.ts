@@ -74,9 +74,13 @@ export class Exercise {
         }
     }
 
-    intervalAt(measureNumber: number) {
+    intervalAt(measureNumber: number): Interval | null {
         const cantusFirmusNote = this.cantusFirmus.notes[measureNumber];
         const counterpointNote = this.counterpoint.notes[measureNumber];
+
+        if (!cantusFirmusNote || !counterpointNote)
+            return null;
+
         return new Interval(cantusFirmusNote, counterpointNote);
     }
 
