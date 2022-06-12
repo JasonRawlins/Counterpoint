@@ -1,13 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
-
-<<<<<<< HEAD
 body {
   background-color: #F0EAD6;
 }
 
-=======
-/* Provide sufficient contrast against white background */
->>>>>>> fde3ad7 (Had to recreate the app so I could publish to aws. Otherwise no changes.)
 a {
   color: #0366d6;
 }
@@ -21,7 +15,6 @@ code {
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
-<<<<<<< HEAD
 
 .manuscript {
   background-color: white;
@@ -31,5 +24,3 @@ code {
   padding: 10px;
   width: 810px;
 }
-=======
->>>>>>> fde3ad7 (Had to recreate the app so I could publish to aws. Otherwise no changes.)

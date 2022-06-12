@@ -17,11 +17,7 @@ export class GameBoardComponent implements OnInit {
       title: "Counterpoint",
       type: Phaser.AUTO,
       scale: {
-<<<<<<< HEAD
         width: 700,
-=======
-        width: 800,
->>>>>>> fde3ad7 (Had to recreate the app so I could publish to aws. Otherwise no changes.)
         height: 300
       },
       physics: {
@@ -31,11 +27,7 @@ export class GameBoardComponent implements OnInit {
         }
       },
       parent: "phaser",
-<<<<<<< HEAD
       backgroundColor: "#ffffff",
-=======
-      backgroundColor: "#ebd5b3",
->>>>>>> fde3ad7 (Had to recreate the app so I could publish to aws. Otherwise no changes.)
       scene: MainScene,
       audio: {
         disableWebAudio: true
