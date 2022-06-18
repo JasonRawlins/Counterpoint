@@ -122,9 +122,14 @@ export default class MainScene extends Phaser.Scene {
   private feedbackText!: Phaser.GameObjects.Text;
   private ghostNoteImage!: Phaser.GameObjects.Image;
 
+  //private exercise = new Exercise(Key.c,
+  //  new Voice(VoicePosition.bottom, Clef.alto, "c4 d4 e4 f4", true),
+  //  new Voice(VoicePosition.top, Clef.treble, "c5 d5 e5 f5")
+  //);
+
   private exercise = new Exercise(Key.c,
-    new Voice(VoicePosition.bottom, Clef.alto, "a3 c4 b3 c4", true),
-    new Voice(VoicePosition.top, Clef.treble, "a4 g4 b4 c5")
+    new Voice(VoicePosition.bottom, Clef.alto, "c4 d4 e4 f4", true),
+    new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c5")
   );
 
   private measureLeftOffset = 70;
@@ -424,36 +429,28 @@ export default class MainScene extends Phaser.Scene {
   }
 
   validateExercise() {
+    
     const parallelOctavesDisplay = document.getElementById("parallel-octaves");
-    validation.getParallelOctaves(this.exercise).forEach(measureNumber => {
-      parallelOctavesDisplay!.innerHTML = `Parallel octaves in measures ${measureNumber} and ${measureNumber + 1}`;
+    let parallelOctavesMessage = "Parallel octaves in measures ";
+    const parallelOctavesMeasures = validation.getParallelOctaves(this.exercise);
+    parallelOctavesMeasures.forEach(measureNumber => {
+      parallelOctavesMessage += `(${measureNumber + 1} and ${measureNumber + 2}), `;
     });
-    // this.mainContainer.list.filter(gameObject => {
-    //     if (gameObject.name.includes(constants.terms.VALIDATION_MARKUP)) {
-    //         gameObject.destroy();
-    //     }
-    // });
+    if (parallelOctavesMeasures.length > 0) {
+      parallelOctavesDisplay!.innerHTML = parallelOctavesMessage.substring(0, parallelOctavesMessage.length - 2);
+    }
 
-    //const validationSize = {
-    //    x: 500,
-    //    y: 23,
-    //    width: 275,
-    //    height: 260
-    //};
+    const parallelFifthsDisplay = document.getElementById("parallel-fifths");
+    let parallelFifthsMessage = "Parallel fifths in measures ";
+    const parallelFifthsMeasures = validation.getParallelFifths(this.exercise);
+    parallelFifthsMeasures.forEach(measureNumber => {
+      parallelFifthsMessage += `(${measureNumber + 1} and ${measureNumber + 2}), `;
+    });
+    if (parallelFifthsMeasures.length > 0) {
+      parallelFifthsDisplay!.innerHTML = parallelFifthsMessage.substring(0, parallelFifthsMessage.length - 2);
+    }
 
 
-    //const validationDisplay = this.add.rectangle(validationSize.x, validationSize.y, validationSize.width, validationSize.height, 0xffffff).setOrigin(0);
-    //this.mainContainer.add(validationDisplay);
-
-    //validation.getParallelOctaves(this.exercise).forEach(measureNumber => {
-    //    const validationMessage = this.add.text(validationSize.x + 10, validationSize.y + 10, `Parallel octaves in measure ${measureNumber}`).setOrigin(0);
-    //    validationMessage.setColor("black");
-    //    this.mainContainer.add(validationMessage);
-    //});
-
-    //validation.getParallelPerfects(this.exercise, 8).forEach(measureNumber => {
-    //    this.renderParallelPerfectErrors(measureNumber, "Parallel\noctaves");
-    //});
 
     //validation.getDissonantIntervals(this.exercise).forEach(measureNumber => {
     //    this.renderDissonantIntervalErrors(measureNumber, "Dissonant");
