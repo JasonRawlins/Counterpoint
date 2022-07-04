@@ -1,0 +1,2 @@
+measure numbers
+dynamic measure width based on counterpoint length

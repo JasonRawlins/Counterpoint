@@ -122,18 +122,13 @@ export default class MainScene extends Phaser.Scene {
   private feedbackText!: Phaser.GameObjects.Text;
   private ghostNoteImage!: Phaser.GameObjects.Image;
 
-  //private exercise = new Exercise(Key.c,
-  //  new Voice(VoicePosition.bottom, Clef.alto, "c4 d4 e4 f4", true),
-  //  new Voice(VoicePosition.top, Clef.treble, "c5 d5 e5 f5")
-  //);
-
   private exercise = new Exercise(Key.c,
-    new Voice(VoicePosition.bottom, Clef.alto, "c4 d4 e4 f4", true),
-    new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c5")
+    new Voice(VoicePosition.bottom, Clef.alto, "c4 d4 e4 f4 g4 d4 f4 e4 d4 c4", true),
+    new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c5 b4")
   );
 
   private measureLeftOffset = 70;
-  private measureWidth = 100;
+  private measureWidth = 62;
   private leftOffset = style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth;
 
   constructor() {
@@ -162,8 +157,6 @@ export default class MainScene extends Phaser.Scene {
     this.load.audio("f5", "assets/audio/f5.mp3");
     this.load.audio("g5", "assets/audio/g5.mp3");
     this.load.audio("a5", "assets/audio/a5.mp3");
-    this.load.audio("b5", "assets/audio/b5.mp3");
-    this.load.audio("c6", "assets/audio/c6.mp3");
   }
 
   public create() {
@@ -298,26 +291,27 @@ export default class MainScene extends Phaser.Scene {
 
     this.exercise.counterpoint.notes.forEach((note: Note, measureNumber: number) => {
       const measureLeft = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
-      const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, (pitchYInSemitones.treble.a3 - pitchYInSemitones.treble.c6) * unit, 0xffffff).setOrigin(0);
-      const measureCenterX = (measureDisplay.x + this.measureWidth / 2) - 2 * unit;
-      const noteY = ((pitchYInSemitones.treble as any)[note.toString()] as number) * unit - halfWholeNoteHeight;
 
+      const measureDisplay = this.add.rectangle(measureLeft, 0, this.measureWidth, (pitchYInSemitones.treble.a3 - pitchYInSemitones.treble.c6) * unit, 0xffffff).setOrigin(0);
       measureDisplay.setInteractive();
       measureDisplay.setAlpha(0.2);
       measureDisplay.setData(constants.terms.MEASURE_DATA, new MeasureData(note, measureNumber, false));
-
       this.mainContainer.add(measureDisplay);
+      const measureCenterX = (measureDisplay.x + this.measureWidth / 2) - 2 * unit;
+
+      if (note) {
+        const noteY = ((pitchYInSemitones.treble as any)[note.toString()] as number) * unit - halfWholeNoteHeight;
+        const counterpointNote = this.exercise.counterpoint.notes[measureNumber];
+        if (counterpointNote) {
+          const measureCounterpointNote = this.renderNote(measureCenterX, noteY, new MeasureData(note, measureNumber, false))
+          this.mainContainer.add(measureCounterpointNote);
+        }
+      }
 
       if (measureNumber > 0) {
         const measureBottom = (pitchYInSemitones.treble.e4 - pitchYInSemitones.treble.f5) * unit;
         const line = this.add.line(measureLeft, pitchYInSemitones.treble.f5 * unit, 0, 0, 0, measureBottom, 0x000000).setOrigin(0);
         this.mainContainer.add(line);
-      }
-
-      const counterpointNote = this.exercise.counterpoint.notes[measureNumber];
-      if (counterpointNote) {
-        const measureCounterpointNote = this.renderNote(measureCenterX, noteY, new MeasureData(note, measureNumber, false))
-        this.mainContainer.add(measureCounterpointNote);
       }
 
       measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
@@ -408,7 +402,9 @@ export default class MainScene extends Phaser.Scene {
     });
 
     this.exercise.counterpoint.notes.forEach((note: Note, measureNumber: number) => {
-      this.renderLedgerLine(pitchYInSemitones.treble, note, measureNumber);
+      if (note) {
+        this.renderLedgerLine(pitchYInSemitones.treble, note, measureNumber);
+      }
     });
   }
 
@@ -428,28 +424,40 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
+  displayMultiMeasureValidation = (preamble: string, selector: string, noErrorsMessage: string, validatedMeasures: number[]) => {
+    const displayElement = document.getElementById(selector);
+    let validationMessage = preamble + " in measures ";
+    validatedMeasures.forEach(measureNumber => {
+      validationMessage += `(${measureNumber + 1} and ${measureNumber + 2}), `;
+    });
+
+    if (validatedMeasures.length > 0) {
+      displayElement!.innerHTML = validationMessage.substring(0, validationMessage.length - 2);
+    } else {
+      displayElement!.innerHTML = noErrorsMessage;
+    }
+  }
+
+  displaySingleMeasureValidation = (preamble: string, selector: string, noErrorsMessage: string, validatedMeasures: number[]) => {
+    const displayElement = document.getElementById(selector);
+    let validationMessage = preamble + " in measure ";
+    validatedMeasures.forEach(measureNumber => {
+      validationMessage += `${measureNumber}`
+    });
+
+    if (validatedMeasures.length > 0) {
+      displayElement!.innerHTML = validationMessage.substring(0, validationMessage.length - 2);
+    } else {
+      displayElement!.innerHTML = noErrorsMessage;
+    }
+  }
+
   validateExercise() {
-    
-    const parallelOctavesDisplay = document.getElementById("parallel-octaves");
-    let parallelOctavesMessage = "Parallel octaves in measures ";
-    const parallelOctavesMeasures = validation.getParallelOctaves(this.exercise);
-    parallelOctavesMeasures.forEach(measureNumber => {
-      parallelOctavesMessage += `(${measureNumber + 1} and ${measureNumber + 2}), `;
-    });
-    if (parallelOctavesMeasures.length > 0) {
-      parallelOctavesDisplay!.innerHTML = parallelOctavesMessage.substring(0, parallelOctavesMessage.length - 2);
-    }
-
-    const parallelFifthsDisplay = document.getElementById("parallel-fifths");
-    let parallelFifthsMessage = "Parallel fifths in measures ";
-    const parallelFifthsMeasures = validation.getParallelFifths(this.exercise);
-    parallelFifthsMeasures.forEach(measureNumber => {
-      parallelFifthsMessage += `(${measureNumber + 1} and ${measureNumber + 2}), `;
-    });
-    if (parallelFifthsMeasures.length > 0) {
-      parallelFifthsDisplay!.innerHTML = parallelFifthsMessage.substring(0, parallelFifthsMessage.length - 2);
-    }
-
+    this.displayMultiMeasureValidation("Parallel octaves", "parallel-octaves", "No parallel octaves", validation.getParallelOctaves(this.exercise));
+    this.displayMultiMeasureValidation("Hidden octaves ", "hidden-octaves", "No hidden octaves", validation.getHiddenOctaves(this.exercise));
+    this.displayMultiMeasureValidation("Parallel fifths ", "parallel-fifths", "No parallel fifths", validation.getParallelFifths(this.exercise));
+    this.displayMultiMeasureValidation("Hidden fifths ", "hidden-fifths", "No hidden fifths", validation.getHiddenFifths(this.exercise));
+    this.displaySingleMeasureValidation("Dissonant interval ", "dissonant-intervals", "No dissonant intervals", validation.getDissonantIntervals(this.exercise));
 
 
     //validation.getDissonantIntervals(this.exercise).forEach(measureNumber => {
@@ -457,40 +465,40 @@ export default class MainScene extends Phaser.Scene {
     //});
   }
 
-  private renderParallelPerfectErrors(measureNumber: number, errorMessage: string) {
-    const firstMeasureNote = this.getNoteGameObjects(measureNumber)[0];
-    const secondMeasureNote = this.getNoteGameObjects(measureNumber + 1)[0];
+  //private renderParallelPerfectErrors(measureNumber: number, errorMessage: string) {
+  //  const firstMeasureNote = this.getNoteGameObjects(measureNumber)[0];
+  //  const secondMeasureNote = this.getNoteGameObjects(measureNumber + 1)[0];
 
-    const x1 = firstMeasureNote.x + wholeNoteWidth + 2;
-    const x2 = secondMeasureNote.x - 2;
-    const y1 = firstMeasureNote.y + wholeNoteHeight / 2;
-    const y2 = secondMeasureNote.y + wholeNoteHeight / 2;
+  //  const x1 = firstMeasureNote.x + wholeNoteWidth + 2;
+  //  const x2 = secondMeasureNote.x - 2;
+  //  const y1 = firstMeasureNote.y + wholeNoteHeight / 2;
+  //  const y2 = secondMeasureNote.y + wholeNoteHeight / 2;
 
-    const errorLine = this.add.line(0, 0, x1, y1, x2, y2, 0xFF0000).setOrigin(0);
-    errorLine.name = constants.terms.VALIDATION_MARKUP;
-    this.mainContainer.add(errorLine);
+  //  const errorLine = this.add.line(0, 0, x1, y1, x2, y2, 0xFF0000).setOrigin(0);
+  //  errorLine.name = constants.terms.VALIDATION_MARKUP;
+  //  this.mainContainer.add(errorLine);
 
-    const errorMessageDisplayRadius = 7;
-    const xMidpoint = (x1 + (x2 - x1) / 2) - errorMessageDisplayRadius;
-    const yMidpoint = (y1 + (y2 - y1) / 2) - errorMessageDisplayRadius;
+  //  const errorMessageDisplayRadius = 7;
+  //  const xMidpoint = (x1 + (x2 - x1) / 2) - errorMessageDisplayRadius;
+  //  const yMidpoint = (y1 + (y2 - y1) / 2) - errorMessageDisplayRadius;
 
-    const errorMessageDisplay = this.add.circle(xMidpoint, yMidpoint, errorMessageDisplayRadius, 0xFF0000).setOrigin(0);
-    errorMessageDisplay.name = constants.terms.VALIDATION_MARKUP;
-    errorMessageDisplay.setInteractive();
-    this.mainContainer.add(errorMessageDisplay);
+  //  const errorMessageDisplay = this.add.circle(xMidpoint, yMidpoint, errorMessageDisplayRadius, 0xFF0000).setOrigin(0);
+  //  errorMessageDisplay.name = constants.terms.VALIDATION_MARKUP;
+  //  errorMessageDisplay.setInteractive();
+  //  this.mainContainer.add(errorMessageDisplay);
 
-    let errorMessagePopup = this.add.text(xMidpoint, yMidpoint, errorMessage);
-    errorMessagePopup.name = constants.terms.VALIDATION_MARKUP;
-    this.mainContainer.add(errorMessagePopup);
-  }
+  //  let errorMessagePopup = this.add.text(xMidpoint, yMidpoint, errorMessage);
+  //  errorMessagePopup.name = constants.terms.VALIDATION_MARKUP;
+  //  this.mainContainer.add(errorMessagePopup);
+  //}
 
-  private renderDissonantIntervalErrors(measureNumber: number, errorMessage: string) {
-    const x = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
-    const y = 5;
-    const errorMessageText = this.add.text(x, y, errorMessage);
-    errorMessageText.name = constants.terms.VALIDATION_MARKUP;
-    this.mainContainer.add(errorMessageText);
-  }
+  //private renderDissonantIntervalErrors(measureNumber: number, errorMessage: string) {
+  //  const x = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
+  //  const y = 5;
+  //  const errorMessageText = this.add.text(x, y, errorMessage);
+  //  errorMessageText.name = constants.terms.VALIDATION_MARKUP;
+  //  this.mainContainer.add(errorMessageText);
+  //}
 
   renderDiagnosticsScreen() {
     //const camera = this.cameras.main;
