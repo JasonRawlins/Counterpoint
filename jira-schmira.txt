@@ -1,4 +1,5 @@
-high point can't be the same as counterpoint loq
+
+
 
 
 
@@ -11,4 +12,5 @@ Complete
 Measure numbers
 Dynamic measure width based on counterpoint length
 Highpoint
+do not cross voices
 

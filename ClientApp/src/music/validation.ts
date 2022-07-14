@@ -160,6 +160,19 @@ export function getHighpoints(exercise: Exercise) {
   return highpoints;
 }
 
+export function getCrossedVoices(exercise: Exercise) {
+  let crossedVoices: number[] = [];
+
+  exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
+    const counterpointNote = exercise.counterpoint.notes[measureNumber];
+    if (counterpointNote?.isLowerThan(cantusFirmusNote)) {
+      crossedVoices.push(measureNumber);
+    }
+  });
+
+  return crossedVoices;
+}
+
 enum Rule {
   prohibitParallelFifths,
   prohibitParallelOctaves

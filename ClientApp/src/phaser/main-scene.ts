@@ -474,6 +474,7 @@ export default class MainScene extends Phaser.Scene {
     this.displayMultiMeasureValidation("Hidden fifths ", "hidden-fifths", "No hidden fifths", validation.getHiddenFifths(this.exercise));
     this.displaySingleMeasureValidation("Dissonant interval ", "dissonant-intervals", "No dissonant intervals", validation.getDissonantIntervals(this.exercise));
     this.displaySingleMeasureValidation("Multiple high points ", "multiple-high-points", "Single high point", validation.getHighpoints(this.exercise), 1);
+    this.displaySingleMeasureValidation("Crossed voices ", "crossed-voices", "No crossed voices", validation.getCrossedVoices(this.exercise));
 
 
     //validation.getDissonantIntervals(this.exercise).forEach(measureNumber => {
