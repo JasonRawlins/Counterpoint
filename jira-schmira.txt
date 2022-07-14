@@ -1,2 +1,14 @@
-measure numbers
-dynamic measure width based on counterpoint length
+high point can't be the same as counterpoint loq
+
+
+
+Backlog
+-------
+
+
+Complete
+--------
+Measure numbers
+Dynamic measure width based on counterpoint length
+Highpoint
+

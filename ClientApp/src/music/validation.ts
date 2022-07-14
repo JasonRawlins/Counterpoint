@@ -139,21 +139,21 @@ function getIntervals(exercise: Exercise, intervalValue: number) {
 }
 
 export function getHighpoints(exercise: Exercise) {
-  let highpoints: Note[] = [];
+  let highpoints: number[] = [];
 
   let highNote = new Note("a0");
   // Octave and letter and accidental
   exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
     const counterpointNote = exercise.counterpoint.notes[measureNumber];
-    if (counterpointNote.compareTo(highNote) === 1) {
+    if (counterpointNote?.isHigherThan(highNote)) {
       highNote = counterpointNote;
     }
   });
 
   exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
     const counterpointNote = exercise.counterpoint.notes[measureNumber];
-    if (counterpointNote.equals(highNote)) {
-      highpoints.push(counterpointNote);
+    if (counterpointNote?.equals(highNote)) {
+      highpoints.push(measureNumber);
     }
   });
 

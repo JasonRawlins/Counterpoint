@@ -124,11 +124,11 @@ export default class MainScene extends Phaser.Scene {
 
   private exercise = new Exercise(Key.c,
     new Voice(VoicePosition.bottom, Clef.alto, "c4 d4 e4 f4 g4 d4 f4 e4 d4 c4", true),
-    new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c5 b4")
+    new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c5 b4 g4 a4 c5 b4 a4")
   );
 
   private measureLeftOffset = 70;
-  private measureWidth = 62;
+  private measureWidth = (screenSize.width - this.measureLeftOffset) / this.exercise.length;
   private leftOffset = style.padding.left + this.measureLeftOffset + this.exercise.length * this.measureWidth;
 
   constructor() {
@@ -283,6 +283,7 @@ export default class MainScene extends Phaser.Scene {
         const measureBottom = (pitchYInSemitones.alto.f3 - pitchYInSemitones.alto.g4) * unit;
         const line = this.add.line(measureLeft, altoClefTopOffset + pitchYInSemitones.alto.g4 * unit, 0, 0, 0, measureBottom, 0x000000).setOrigin(0);
         this.mainContainer.add(line);
+        this.add.text(measureLeft + 3, 8, (measureNumber + 1).toString(), { color: "0x000000", fontSize: "16" }).setOrigin(0);
       }
 
       const measureCantusFirmusNote = this.renderNote(measureCenterX, noteY, new MeasureData(note, measureNumber, true));
@@ -438,26 +439,41 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
-  displaySingleMeasureValidation = (preamble: string, selector: string, noErrorsMessage: string, validatedMeasures: number[]) => {
+  displaySingleMeasureValidation = (preamble: string, selector: string, noErrorsMessage: string, validatedMeasures: number[], measureCountThreshold: number = 0) => {
     const displayElement = document.getElementById(selector);
-    let validationMessage = preamble + " in measure ";
+    let validationMessage = preamble + " in measure(s) ";
     validatedMeasures.forEach(measureNumber => {
-      validationMessage += `${measureNumber}`
+      validationMessage += `${measureNumber + 1}, `;
     });
 
-    if (validatedMeasures.length > 0) {
+    if (validatedMeasures.length > measureCountThreshold) {
       displayElement!.innerHTML = validationMessage.substring(0, validationMessage.length - 2);
     } else {
       displayElement!.innerHTML = noErrorsMessage;
     }
   }
 
+  //displaySingleMeasureValidation = (preamble: string, selector: string, noErrorsMessage: string, validatedMeasures: number[]) => {
+  //  const displayElement = document.getElementById(selector);
+  //  let validationMessage = preamble + " in measure(s) ";
+  //  validatedMeasures.forEach(measureNumber => {
+  //    validationMessage += `${measureNumber + 1}, `;
+  //  });
+
+  //  if (validatedMeasures.length > 0) {
+  //    displayElement!.innerHTML += validationMessage.substring(0, validationMessage.length - 2);
+  //  } else {
+  //    displayElement!.innerHTML = noErrorsMessage;
+  //  }
+  //}
+
   validateExercise() {
-    this.displayMultiMeasureValidation("Parallel octaves", "parallel-octaves", "No parallel octaves", validation.getParallelOctaves(this.exercise));
+    this.displayMultiMeasureValidation("Parallel octaves ", "parallel-octaves", "No parallel octaves", validation.getParallelOctaves(this.exercise));
     this.displayMultiMeasureValidation("Hidden octaves ", "hidden-octaves", "No hidden octaves", validation.getHiddenOctaves(this.exercise));
     this.displayMultiMeasureValidation("Parallel fifths ", "parallel-fifths", "No parallel fifths", validation.getParallelFifths(this.exercise));
     this.displayMultiMeasureValidation("Hidden fifths ", "hidden-fifths", "No hidden fifths", validation.getHiddenFifths(this.exercise));
     this.displaySingleMeasureValidation("Dissonant interval ", "dissonant-intervals", "No dissonant intervals", validation.getDissonantIntervals(this.exercise));
+    this.displaySingleMeasureValidation("Multiple high points ", "multiple-high-points", "Single high point", validation.getHighpoints(this.exercise), 1);
 
 
     //validation.getDissonantIntervals(this.exercise).forEach(measureNumber => {
