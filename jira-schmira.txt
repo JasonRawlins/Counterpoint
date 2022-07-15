@@ -1,10 +1,11 @@
-
+Clicking a note removes it
 
 
 
 
 Backlog
 -------
+sound is awful
 
 
 Complete
@@ -12,5 +13,7 @@ Complete
 Measure numbers
 Dynamic measure width based on counterpoint length
 Highpoint
-do not cross voices
+Do not cross voices
+First measure is 5 or 8, last measure is 1, 8
+Consecutive 3rds, 6ths, and 10ths
 

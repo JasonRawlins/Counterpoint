@@ -141,6 +141,10 @@ function getIntervals(exercise: Exercise, intervalValue: number) {
 export function getHighpoints(exercise: Exercise) {
   let highpoints: number[] = [];
 
+  if (exercise.counterpoint.notes.some(n => n === null)) {
+    return highpoints;
+  }
+
   let highNote = new Note("a0");
   // Octave and letter and accidental
   exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
@@ -173,7 +177,32 @@ export function getCrossedVoices(exercise: Exercise) {
   return crossedVoices;
 }
 
-enum Rule {
-  prohibitParallelFifths,
-  prohibitParallelOctaves
+export function firstMeasureIntervalIsValid(exercise: Exercise) {
+  return (exercise.intervalAt(0)?.isFifth() || exercise.intervalAt(0)?.isOctave()) || false;
+}
+
+export function lastMeasureIntervalIsValid(exercise: Exercise) {
+  const lastMeasureInterval = exercise.intervalAt(exercise.length - 1);
+  return (lastMeasureInterval?.isUnison() || lastMeasureInterval?.isOctave()) || false;
+}
+
+export function numberOf3rds6ths10thsIsValid(exercise: Exercise) {
+  let isValid = true;
+  // start at beginning. Find the first measure that is one of these intervals. Reach out
+  exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
+    if (measureNumber + 3 < exercise.length) {
+      const firstInterval = exercise.intervalAt(measureNumber);
+      const secondInterval = exercise.intervalAt(measureNumber + 1);
+      const thirdInterval = exercise.intervalAt(measureNumber + 2);
+      const fourthInterval = exercise.intervalAt(measureNumber + 3)
+
+      if (firstInterval?.isThird() && secondInterval?.isThird() && thirdInterval?.isThird() && fourthInterval?.isThird())
+        isValid = false;
+
+      if (firstInterval?.isSixth() && secondInterval?.isSixth() && thirdInterval?.isSixth() && fourthInterval?.isSixth())
+        isValid = false;
+    }
+  });
+
+  return isValid;
 }

@@ -124,7 +124,7 @@ export default class MainScene extends Phaser.Scene {
 
   private exercise = new Exercise(Key.c,
     new Voice(VoicePosition.bottom, Clef.alto, "c4 d4 e4 f4 g4 d4 f4 e4 d4 c4", true),
-    new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c5 b4 g4 a4 c5 b4 a4")
+    new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c5 b4 g4 a4 c5 b4")
   );
 
   private measureLeftOffset = 70;
@@ -453,19 +453,16 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
-  //displaySingleMeasureValidation = (preamble: string, selector: string, noErrorsMessage: string, validatedMeasures: number[]) => {
-  //  const displayElement = document.getElementById(selector);
-  //  let validationMessage = preamble + " in measure(s) ";
-  //  validatedMeasures.forEach(measureNumber => {
-  //    validationMessage += `${measureNumber + 1}, `;
-  //  });
+  displayMessageValidation = (selector: string, validMessage: string, invalidMessage: string, isValid: boolean) => {
+    const displayElement = document.getElementById(selector);
+    if (isValid) {
+      displayElement!.innerHTML = validMessage;
+    }
+    else {
+      displayElement!.innerHTML = invalidMessage;
 
-  //  if (validatedMeasures.length > 0) {
-  //    displayElement!.innerHTML += validationMessage.substring(0, validationMessage.length - 2);
-  //  } else {
-  //    displayElement!.innerHTML = noErrorsMessage;
-  //  }
-  //}
+    }
+  }
 
   validateExercise() {
     this.displayMultiMeasureValidation("Parallel octaves ", "parallel-octaves", "No parallel octaves", validation.getParallelOctaves(this.exercise));
@@ -475,11 +472,9 @@ export default class MainScene extends Phaser.Scene {
     this.displaySingleMeasureValidation("Dissonant interval ", "dissonant-intervals", "No dissonant intervals", validation.getDissonantIntervals(this.exercise));
     this.displaySingleMeasureValidation("Multiple high points ", "multiple-high-points", "Single high point", validation.getHighpoints(this.exercise), 1);
     this.displaySingleMeasureValidation("Crossed voices ", "crossed-voices", "No crossed voices", validation.getCrossedVoices(this.exercise));
-
-
-    //validation.getDissonantIntervals(this.exercise).forEach(measureNumber => {
-    //    this.renderDissonantIntervalErrors(measureNumber, "Dissonant");
-    //});
+    this.displayMessageValidation("first-measure-interval", "FM-VALID", "The interval in the first measure must be a perfect 5th or perfect octave", validation.firstMeasureIntervalIsValid(this.exercise));
+    this.displayMessageValidation("last-measure-interval", "LM-VALID", "The interval in the last measure must be a unison or perfect octave", validation.lastMeasureIntervalIsValid(this.exercise));
+    this.displayMessageValidation("thirds-sixths-tenths", "3610 VALID", "There should be no more than three consecutive thirds, sixths, or tenths", validation.numberOf3rds6ths10thsIsValid(this.exercise));
   }
 
   //private renderParallelPerfectErrors(measureNumber: number, errorMessage: string) {
