@@ -479,9 +479,9 @@ export default class MainScene extends Phaser.Scene {
     this.displaySingleMeasureValidation("Dissonant interval ", "dissonant-intervals", "No dissonant intervals", validation.getDissonantIntervals(this.exercise));
     this.displaySingleMeasureValidation("Multiple high points ", "multiple-high-points", "Single high point", validation.getHighpoints(this.exercise), 1);
     this.displaySingleMeasureValidation("Crossed voices ", "crossed-voices", "No crossed voices", validation.getCrossedVoices(this.exercise));
-    this.displayMessageValidation("first-measure-interval", "First measure ok", "The interval in the first measure must be a perfect 5th or perfect octave", validation.firstMeasureIntervalIsValid(this.exercise));
-    this.displayMessageValidation("last-measure-interval", "Last measure ok", "The interval in the last measure must be a unison or perfect octave", validation.lastMeasureIntervalIsValid(this.exercise));
-    this.displayMessageValidation("thirds-sixths-tenths", "Thirds, sixths, and tenths ok", "There should be no more than three consecutive measures of thirds, sixths, or tenths", validation.numberOf3rds6ths10thsIsValid(this.exercise));
+    this.displayMessageValidation("first-measure-interval", "First measure intervals ok", "The interval in the first measure must be a perfect 5th or perfect octave", validation.firstMeasureIntervalIsValid(this.exercise));
+    this.displayMessageValidation("last-measure-interval", "Last measure intervals ok", "The interval in the last measure must be a unison or perfect octave", validation.lastMeasureIntervalIsValid(this.exercise));
+    this.displayMessageValidation("thirds-sixths-tenths", "Consecutive thirds, sixths, and tenths ok", "There should be no more than three consecutive measures of thirds, sixths, or tenths", validation.numberOf3rds6ths10thsIsValid(this.exercise));
     this.displayMessageValidation("tied-notes", "Tied notes ok", "There should be no more than one tied note in an exercise", validation.numberOfTiedNotesIsValid(this.exercise));
   }
 
