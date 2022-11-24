@@ -1,4 +1,4 @@
-﻿export enum IntervalConstant {
+export enum IntervalConstant {
     fifthInIntervals = 5,
     octaveInIntervals = 8,
     octaveInSemitones = 12,
@@ -79,7 +79,7 @@ export class Interval {
         this.quality = Interval.getQuality(bottomNote, this.simpleComparisonNote, this.simpleValue);
     }
 
-    equals(otherInterval: Interval | string, simplified: boolean): boolean {
+    equals(otherInterval: Interval | string, simplified = true): boolean {
         if (otherInterval instanceof Interval) {
             if (simplified) {
                 return this.simpleValue === otherInterval.simpleValue && this.quality === otherInterval.quality;

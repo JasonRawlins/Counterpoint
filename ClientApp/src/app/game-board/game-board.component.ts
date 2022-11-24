@@ -18,7 +18,7 @@ export class GameBoardComponent implements OnInit {
       type: Phaser.AUTO,
       scale: {
         width: 700,
-        height: 300
+        height: 200
       },
       physics: {
         default: "arcade",

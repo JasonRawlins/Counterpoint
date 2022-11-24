@@ -1,0 +1,10 @@
+.rule-valid { color: green; }
+.rule-invalid { color: red; }
+
+.rule-valid, .rule-invalid {
+    font-weight: bold;
+}
+
+.rule-validity-display {
+    padding-left: 10px;
+}

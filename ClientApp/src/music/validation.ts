@@ -206,3 +206,18 @@ export function numberOf3rds6ths10thsIsValid(exercise: Exercise) {
 
   return isValid;
 }
+
+export function numberOfTiedNotesIsValid(exercise: Exercise) {
+  let measures: number[] = [];
+
+  exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
+    const thisInterval = exercise.intervalAt(measureNumber);
+    const nextInterval = exercise.intervalAt(measureNumber + 1);
+
+    if (thisInterval && nextInterval && thisInterval.equals(nextInterval)) {
+      measures.push(measureNumber);
+    }
+  });
+
+  return measures.length > 1;
+}

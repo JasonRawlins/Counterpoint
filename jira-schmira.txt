@@ -1,3 +1,7 @@
+High point validation is not working
+Tied notes validation is not working
+Measure numbers for tied notes
+
 Clicking a note removes it
 
 

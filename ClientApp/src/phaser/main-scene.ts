@@ -92,7 +92,7 @@ const constants = {
     G4: "G4",
     F4: "F4",
     E4: "E4",
-    D4: "F4"
+    D4: "D4"
   },
   terms: {
     GHOST_NOTE: "ghost-note",
@@ -108,7 +108,7 @@ const constants = {
 class MeasureData {
   constructor(public note: Note, public number: number, public isCantusFirmus: boolean) { }
 }
-
+  
 const sceneConfig: Phaser.Types.Scenes.SettingsConfig = {
   active: false,
   visible: false,
@@ -119,12 +119,12 @@ export default class MainScene extends Phaser.Scene {
   private controls!: Phaser.Cameras.Controls.SmoothedKeyControl;
   private mainContainer!: Phaser.GameObjects.Container;
   //private gui: dat.GUI;
-  private feedbackText!: Phaser.GameObjects.Text;
+  //private feedbackText!: Phaser.GameObjects.Text;
   private ghostNoteImage!: Phaser.GameObjects.Image;
 
   private exercise = new Exercise(Key.c,
     new Voice(VoicePosition.bottom, Clef.alto, "c4 d4 e4 f4 g4 d4 f4 e4 d4 c4", true),
-    new Voice(VoicePosition.top, Clef.treble, "g4 a4 b4 c5 b4 g4 a4 c5 b4")
+    new Voice(VoicePosition.top, Clef.treble, "c5 a4 a4 a4 b4 g4 a4 c5 b4")
   );
 
   private measureLeftOffset = 70;
@@ -182,10 +182,12 @@ export default class MainScene extends Phaser.Scene {
     this.renderGrandStaff();
     this.renderMeasures();
     this.renderLedgerLines();
-    this.renderTransportControls();
+    this.validateExercise();
 
-    this.feedbackText = this.add.text(0, 250, "Feedback", { color: "#000000" });
-    this.mainContainer.add(this.feedbackText);
+    //this.renderTransportControls();
+
+    //this.feedbackText = this.add.text(0, 250, "Feedback", { color: "#000000" });
+    //this.mainContainer.add(this.feedbackText);
   }
 
   renderTransportControls() {
@@ -207,13 +209,13 @@ export default class MainScene extends Phaser.Scene {
       }, 500);
     });
 
-    this.mainContainer.add(playButton);
+    //this.mainContainer.add(playButton);
   }
 
   public update(time: number, delta: number) {
     this.controls.update(delta);
     this.renderLedgerLines();
-    this.validateExercise();
+    //this.validateExercise();
   }
 
   renderGrandStaff() {
@@ -352,6 +354,8 @@ export default class MainScene extends Phaser.Scene {
         }
 
         this.mainContainer.add(this.renderNote(measureCenterX, pitchInPixels, new MeasureData(note, measureNumber, false)));
+
+        this.validateExercise();
       });
     });
   }
@@ -425,6 +429,9 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
+  private validMark = "<span class='rule-valid' _ngcontent-ng-cli-universal-c51>✓ </span>";
+  private invalidMark = "<span class='rule-invalid' _ngcontent-ng-cli-universal-c51>X </span>";
+
   displayMultiMeasureValidation = (preamble: string, selector: string, noErrorsMessage: string, validatedMeasures: number[]) => {
     const displayElement = document.getElementById(selector);
     let validationMessage = preamble + " in measures ";
@@ -433,9 +440,9 @@ export default class MainScene extends Phaser.Scene {
     });
 
     if (validatedMeasures.length > 0) {
-      displayElement!.innerHTML = validationMessage.substring(0, validationMessage.length - 2);
+      displayElement!.innerHTML = this.invalidMark + validationMessage.substring(0, validationMessage.length - 2);
     } else {
-      displayElement!.innerHTML = noErrorsMessage;
+      displayElement!.innerHTML = this.validMark + noErrorsMessage;
     }
   }
 
@@ -447,19 +454,19 @@ export default class MainScene extends Phaser.Scene {
     });
 
     if (validatedMeasures.length > measureCountThreshold) {
-      displayElement!.innerHTML = validationMessage.substring(0, validationMessage.length - 2);
+      displayElement!.innerHTML = this.invalidMark + validationMessage.substring(0, validationMessage.length - 2);
     } else {
-      displayElement!.innerHTML = noErrorsMessage;
+      displayElement!.innerHTML = this.validMark + noErrorsMessage;
     }
   }
 
   displayMessageValidation = (selector: string, validMessage: string, invalidMessage: string, isValid: boolean) => {
     const displayElement = document.getElementById(selector);
     if (isValid) {
-      displayElement!.innerHTML = validMessage;
+      displayElement!.innerHTML = this.validMark + validMessage;
     }
     else {
-      displayElement!.innerHTML = invalidMessage;
+      displayElement!.innerHTML = this.invalidMark + invalidMessage;
 
     }
   }
@@ -472,9 +479,10 @@ export default class MainScene extends Phaser.Scene {
     this.displaySingleMeasureValidation("Dissonant interval ", "dissonant-intervals", "No dissonant intervals", validation.getDissonantIntervals(this.exercise));
     this.displaySingleMeasureValidation("Multiple high points ", "multiple-high-points", "Single high point", validation.getHighpoints(this.exercise), 1);
     this.displaySingleMeasureValidation("Crossed voices ", "crossed-voices", "No crossed voices", validation.getCrossedVoices(this.exercise));
-    this.displayMessageValidation("first-measure-interval", "FM-VALID", "The interval in the first measure must be a perfect 5th or perfect octave", validation.firstMeasureIntervalIsValid(this.exercise));
-    this.displayMessageValidation("last-measure-interval", "LM-VALID", "The interval in the last measure must be a unison or perfect octave", validation.lastMeasureIntervalIsValid(this.exercise));
-    this.displayMessageValidation("thirds-sixths-tenths", "3610 VALID", "There should be no more than three consecutive thirds, sixths, or tenths", validation.numberOf3rds6ths10thsIsValid(this.exercise));
+    this.displayMessageValidation("first-measure-interval", "First measure ok", "The interval in the first measure must be a perfect 5th or perfect octave", validation.firstMeasureIntervalIsValid(this.exercise));
+    this.displayMessageValidation("last-measure-interval", "Last measure ok", "The interval in the last measure must be a unison or perfect octave", validation.lastMeasureIntervalIsValid(this.exercise));
+    this.displayMessageValidation("thirds-sixths-tenths", "Thirds, sixths, and tenths ok", "There should be no more than three consecutive measures of thirds, sixths, or tenths", validation.numberOf3rds6ths10thsIsValid(this.exercise));
+    this.displayMessageValidation("tied-notes", "Tied notes ok", "There should be no more than one tied note in an exercise", validation.numberOfTiedNotesIsValid(this.exercise));
   }
 
   //private renderParallelPerfectErrors(measureNumber: number, errorMessage: string) {
