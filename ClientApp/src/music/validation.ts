@@ -141,10 +141,6 @@ function getIntervals(exercise: Exercise, intervalValue: number) {
 export function getHighpoints(exercise: Exercise) {
   let highpoints: number[] = [];
 
-  if (exercise.counterpoint.notes.some(n => n === null)) {
-    return highpoints;
-  }
-
   let highNote = new Note("a0");
   // Octave and letter and accidental
   exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
@@ -188,7 +184,7 @@ export function lastMeasureIntervalIsValid(exercise: Exercise) {
 
 export function numberOf3rds6ths10thsIsValid(exercise: Exercise) {
   let isValid = true;
-  // start at beginning. Find the first measure that is one of these intervals. Reach out
+  
   exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
     if (measureNumber + 3 < exercise.length) {
       const firstInterval = exercise.intervalAt(measureNumber);
@@ -207,17 +203,39 @@ export function numberOf3rds6ths10thsIsValid(exercise: Exercise) {
   return isValid;
 }
 
+export function leadingToneIsApproachedByStep(exercise: Exercise) {
+  const thirdToLastMeasureInterval = exercise.intervalAt(exercise.length - 3);
+  const secondToLastMeasureInterval = exercise.intervalAt(exercise.length - 2);
+
+  if (!thirdToLastMeasureInterval || !secondToLastMeasureInterval) {
+    return true;
+  }
+
+  const cantusFirmusIsLeadingTone = secondToLastMeasureInterval.bottomNote.scaleIndex === 6;
+  const counterpointIsLeadingTone = secondToLastMeasureInterval.topNote.scaleIndex === 6;
+
+  if (counterpointIsLeadingTone
+    && (thirdToLastMeasureInterval.topNote.scaleIndex === 5
+      || thirdToLastMeasureInterval.topNote.scaleIndex === 6
+      || thirdToLastMeasureInterval.topNote.scaleIndex === 0)) {
+      return true;
+  }
+
+  return false;
+}
+
 export function numberOfTiedNotesIsValid(exercise: Exercise) {
   let measures: number[] = [];
 
   exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
-    const thisInterval = exercise.intervalAt(measureNumber);
-    const nextInterval = exercise.intervalAt(measureNumber + 1);
+    const thisNote = exercise.counterpoint.note(measureNumber);
+    const nextNote = exercise.counterpoint.note(measureNumber + 1);
 
-    if (thisInterval && nextInterval && thisInterval.equals(nextInterval)) {
+    if (thisNote && nextNote && thisNote.equals(nextNote)) {
       measures.push(measureNumber);
     }
   });
 
-  return measures.length > 1;
+  return measures.length < 2;
 }
+

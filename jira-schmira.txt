@@ -1,15 +1,16 @@
-High point validation is not working
-Tied notes validation is not working
-Measure numbers for tied notes
-
-Clicking a note removes it
-
-
-
+What does alpha look like
+Do not approach the leading tone by leap
 
 Backlog
 -------
-sound is awful
+Choose cantus firmus
+Tied notes validation is not working
+Penultimate measure has leading tone
+Leading tone is approached by step
+Measure numbers for tied notes
+Show tie
+Clicking a note removes it (do I need this for alpha?)
+Sound is awful
 
 
 Complete
@@ -20,4 +21,4 @@ Highpoint
 Do not cross voices
 First measure is 5 or 8, last measure is 1, 8
 Consecutive 3rds, 6ths, and 10ths
-
+High point validation is not working
