@@ -236,6 +236,6 @@ export function numberOfTiedNotesIsValid(exercise: Exercise) {
     }
   });
 
-  return measures.length < 2;
+  return measures.length <= 2;
 }
 

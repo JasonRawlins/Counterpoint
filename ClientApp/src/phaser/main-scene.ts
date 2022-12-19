@@ -120,7 +120,7 @@ export default class MainScene extends Phaser.Scene {
   private mainContainer!: Phaser.GameObjects.Container;
   //private gui: dat.GUI;
   //private feedbackText!: Phaser.GameObjects.Text;
-  private ghostNoteImage!: Phaser.GameObjects.Image;
+  //private ghostNoteImage!: Phaser.GameObjects.Image;
 
   private exercise = new Exercise(Key.c,
     new Voice(VoicePosition.bottom, Clef.alto, "c4 d4 e4 f4 g4 d4 f4 e4 d4 c4", true),
@@ -317,28 +317,28 @@ export default class MainScene extends Phaser.Scene {
         this.mainContainer.add(line);
       }
 
-      measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
+      //measureDisplay.on("pointermove", (pointer: Phaser.Input.Pointer, currentlyOver: Phaser.GameObjects.GameObject[]) => {
+      //  const semitones = Math.round(pointer.y / unit);
+      //  const note = noteFromSemitones(pitchYInSemitones.treble, semitones);
+      //  const pitchInPixels = semitones * unit - halfWholeNoteHeight;
+
+      //  if (this.ghostNoteImage) {
+      //    this.ghostNoteImage.destroy();
+      //  }
+
+      //  this.ghostNoteImage = this.renderNote(measureCenterX, pitchInPixels, new MeasureData(note, measureNumber, false));
+
+      //  this.ghostNoteImage.name = constants.terms.GHOST_NOTE;
+      //  this.ghostNoteImage.alpha = 0.5;
+      //  this.mainContainer.add(this.ghostNoteImage);
+      //});
+
+      //measureDisplay.on("pointerout", () => {
+      //  this.ghostNoteImage.destroy();
+      //});
+
+      measureDisplay.on("pointerdown", (pointer: Phaser.Input.Pointer, currentyOver: Phaser.GameObjects.GameObject[]) => {
         const semitones = Math.round(pointer.y / unit);
-        const note = noteFromSemitones(pitchYInSemitones.treble, semitones);
-        const pitchInPixels = semitones * unit - halfWholeNoteHeight;
-
-        if (this.ghostNoteImage) {
-          this.ghostNoteImage.destroy();
-        }
-
-        this.ghostNoteImage = this.renderNote(measureCenterX, pitchInPixels, new MeasureData(note, measureNumber, false));
-
-        this.ghostNoteImage.name = constants.terms.GHOST_NOTE;
-        this.ghostNoteImage.alpha = 0.5;
-        this.mainContainer.add(this.ghostNoteImage);
-      });
-
-      measureDisplay.on("pointerout", () => {
-        this.ghostNoteImage.destroy();
-      });
-
-      measureDisplay.on("pointerdown", () => {
-        const semitones = Math.round((this.ghostNoteImage.y + halfWholeNoteHeight) / unit);
         const note = noteFromSemitones(pitchYInSemitones.treble, semitones);
         const pitchInPixels = semitones * unit - halfWholeNoteHeight;
         this.exercise.counterpoint.removeNote(measureNumber);
@@ -394,13 +394,13 @@ export default class MainScene extends Phaser.Scene {
       }
     });
 
-    if (this.ghostNoteImage) {
-      const measureData = this.ghostNoteImage.getData(constants.terms.MEASURE_DATA) as MeasureData;
+    //if (this.ghostNoteImage) {
+    //  const measureData = this.ghostNoteImage.getData(constants.terms.MEASURE_DATA) as MeasureData;
 
-      if (measureData?.note) {
-        this.renderLedgerLine(pitchYInSemitones.treble, measureData.note, measureData.number, 0, 0.5);
-      }
-    }
+    //  if (measureData?.note) {
+    //    this.renderLedgerLine(pitchYInSemitones.treble, measureData.note, measureData.number, 0, 0.5);
+    //  }
+    //}
 
     this.exercise.cantusFirmus.notes.forEach((note: Note, measureNumber: number) => {
       this.renderLedgerLine(pitchYInSemitones.alto, note, measureNumber, altoClefTopOffset);
@@ -483,43 +483,8 @@ export default class MainScene extends Phaser.Scene {
     this.displayMessageValidation("last-measure-interval", "Last measure interval is a unison or octave", "The interval in the last measure must be a unison or perfect octave", validation.lastMeasureIntervalIsValid(this.exercise));
     this.displayMessageValidation("thirds-sixths-tenths", "No more than three consecutive thirds, sixths, or tenths", "There should be no more than three consecutive measures of thirds, sixths, or tenths", validation.numberOf3rds6ths10thsIsValid(this.exercise));
     this.displayMessageValidation("leading-tone-approached-by-step", "The leading tone is approached by step", "The leading tone must be approached by step", validation.leadingToneIsApproachedByStep(this.exercise));
-    this.displayMessageValidation("tied-notes", "No more than one tied note per exercise", "There should be no more than one tied note in an exercise", validation.numberOfTiedNotesIsValid(this.exercise));
+    this.displayMessageValidation("tied-notes", "No more than two tied note per exercise", "There should be no more than two tied note in an exercise", validation.numberOfTiedNotesIsValid(this.exercise));
   }
-
-  //private renderParallelPerfectErrors(measureNumber: number, errorMessage: string) {
-  //  const firstMeasureNote = this.getNoteGameObjects(measureNumber)[0];
-  //  const secondMeasureNote = this.getNoteGameObjects(measureNumber + 1)[0];
-
-  //  const x1 = firstMeasureNote.x + wholeNoteWidth + 2;
-  //  const x2 = secondMeasureNote.x - 2;
-  //  const y1 = firstMeasureNote.y + wholeNoteHeight / 2;
-  //  const y2 = secondMeasureNote.y + wholeNoteHeight / 2;
-
-  //  const errorLine = this.add.line(0, 0, x1, y1, x2, y2, 0xFF0000).setOrigin(0);
-  //  errorLine.name = constants.terms.VALIDATION_MARKUP;
-  //  this.mainContainer.add(errorLine);
-
-  //  const errorMessageDisplayRadius = 7;
-  //  const xMidpoint = (x1 + (x2 - x1) / 2) - errorMessageDisplayRadius;
-  //  const yMidpoint = (y1 + (y2 - y1) / 2) - errorMessageDisplayRadius;
-
-  //  const errorMessageDisplay = this.add.circle(xMidpoint, yMidpoint, errorMessageDisplayRadius, 0xFF0000).setOrigin(0);
-  //  errorMessageDisplay.name = constants.terms.VALIDATION_MARKUP;
-  //  errorMessageDisplay.setInteractive();
-  //  this.mainContainer.add(errorMessageDisplay);
-
-  //  let errorMessagePopup = this.add.text(xMidpoint, yMidpoint, errorMessage);
-  //  errorMessagePopup.name = constants.terms.VALIDATION_MARKUP;
-  //  this.mainContainer.add(errorMessagePopup);
-  //}
-
-  //private renderDissonantIntervalErrors(measureNumber: number, errorMessage: string) {
-  //  const x = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
-  //  const y = 5;
-  //  const errorMessageText = this.add.text(x, y, errorMessage);
-  //  errorMessageText.name = constants.terms.VALIDATION_MARKUP;
-  //  this.mainContainer.add(errorMessageText);
-  //}
 
   renderDiagnosticsScreen() {
     //const camera = this.cameras.main;
