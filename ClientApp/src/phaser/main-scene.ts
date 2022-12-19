@@ -483,7 +483,7 @@ export default class MainScene extends Phaser.Scene {
     this.displayMessageValidation("last-measure-interval", "Last measure interval is a unison or octave", "The interval in the last measure must be a unison or perfect octave", validation.lastMeasureIntervalIsValid(this.exercise));
     this.displayMessageValidation("thirds-sixths-tenths", "No more than three consecutive thirds, sixths, or tenths", "There should be no more than three consecutive measures of thirds, sixths, or tenths", validation.numberOf3rds6ths10thsIsValid(this.exercise));
     this.displayMessageValidation("leading-tone-approached-by-step", "The leading tone is approached by step", "The leading tone must be approached by step", validation.leadingToneIsApproachedByStep(this.exercise));
-    this.displayMessageValidation("tied-notes", "No more than one tied notes per exercise", "There should be no more than one tied note in an exercise", validation.numberOfTiedNotesIsValid(this.exercise));
+    this.displayMessageValidation("tied-notes", "No more than one tied note per exercise", "There should be no more than one tied note in an exercise", validation.numberOfTiedNotesIsValid(this.exercise));
   }
 
   //private renderParallelPerfectErrors(measureNumber: number, errorMessage: string) {

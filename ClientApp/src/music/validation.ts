@@ -215,9 +215,9 @@ export function leadingToneIsApproachedByStep(exercise: Exercise) {
   const counterpointIsLeadingTone = secondToLastMeasureInterval.topNote.scaleIndex === 6;
 
   if (counterpointIsLeadingTone
-    && (thirdToLastMeasureInterval.topNote.scaleIndex === 5
-      || thirdToLastMeasureInterval.topNote.scaleIndex === 6
-      || thirdToLastMeasureInterval.topNote.scaleIndex === 0)) {
+    && (thirdToLastMeasureInterval.topNote.scaleIndex === 0
+      || thirdToLastMeasureInterval.topNote.scaleIndex === 5
+      || thirdToLastMeasureInterval.topNote.scaleIndex === 6)) {
       return true;
   }
 
