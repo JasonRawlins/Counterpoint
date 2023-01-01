@@ -1,6 +1,8 @@
 What does alpha look like
 	slide around screen, rotate
 
+Use correct image for ties
+
 
 
 

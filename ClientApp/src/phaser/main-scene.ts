@@ -398,7 +398,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   renderTie(x: number, y: number) {
-    const tieImage = this.add.image(x - 10, y - 20, "musical-symbols", "common-time.png").setOrigin(0);
+    const tieImage = this.add.image(x - 50, y - wholeNoteHeight, "musical-symbols", "tie.png").setOrigin(0);
     tieImage.name = constants.terms.TIE;
     this.mainContainer.add(tieImage);
 
