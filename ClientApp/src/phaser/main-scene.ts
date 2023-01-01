@@ -101,7 +101,8 @@ const constants = {
     NOTE: "note",
     PITCH: "pitch",
     VALIDATION_MARKUP: "validation-markup",
-    WHOLE_NOTE: "whole-note"
+    WHOLE_NOTE: "whole-note",
+    TIE: "tie"
   }
 };
 
@@ -180,8 +181,9 @@ export default class MainScene extends Phaser.Scene {
     this.mainContainer = this.add.container(0, 0);
 
     this.renderGrandStaff();
-    this.renderMeasures();
     this.renderLedgerLines();
+    this.renderMeasures();
+    this.renderTies();
     this.validateExercise();
 
     //this.renderTransportControls();
@@ -215,7 +217,8 @@ export default class MainScene extends Phaser.Scene {
   public update(time: number, delta: number) {
     this.controls.update(delta);
     this.renderLedgerLines();
-    //this.validateExercise();
+    //this.renderMeasures();
+    this.renderTies();
   }
 
   renderGrandStaff() {
@@ -344,20 +347,62 @@ export default class MainScene extends Phaser.Scene {
         this.exercise.counterpoint.removeNote(measureNumber);
         this.exercise.counterpoint.addNote(measureNumber, note);
 
-        const placedNoteSound = this.sound.add(note.toString());
-        placedNoteSound.play();
+        //const placedNoteSound = this.sound.add(note.toString());
+        //placedNoteSound.play();
 
         const noteGameObjects = this.getNoteGameObjects(measureNumber);
-
         if (noteGameObjects.length > 0) {
           noteGameObjects[0].destroy();
         }
 
-        this.mainContainer.add(this.renderNote(measureCenterX, pitchInPixels, new MeasureData(note, measureNumber, false)));
+        //const tieGameObjects = this.getTieGameObjects();
+        //tieGameObjects.forEach(tieGameObject => {
+        //  tieGameObject.destroy();
+        //});
+
+        const measureData = new MeasureData(note, measureNumber, false);
+        this.mainContainer.add(this.renderNote(measureCenterX, pitchInPixels, measureData));
+
+        //const tieGameObjects = this.getTieGameObjects(measureNumber);
+        //if (tieGameObjects.length > 0) {
+        //  tieGameObjects[0].destroy();
+        //}
+        //const previousCounterpointNote = this.exercise.counterpoint.notes[measureNumber - 1];
+        //if (previousCounterpointNote && note.equals(previousCounterpointNote)) {
+        //  this.mainContainer.add(this.renderTie(measureCenterX, pitchInPixels));
+        //}
 
         this.validateExercise();
       });
     });
+  }
+
+  renderTies() {
+    const tieGameObjects = this.getTieGameObjects();
+    tieGameObjects.forEach(tieGameObject => {
+      tieGameObject.destroy();
+    });
+
+    this.exercise.counterpoint.notes.forEach((note: Note, measureNumber: number) => {
+      const measureLeft = style.padding.left + this.measureLeftOffset + this.measureWidth * measureNumber;
+      const measureCenterX = (measureLeft + this.measureWidth / 2) - 2 * unit;
+
+      const previousNote = this.exercise.counterpoint.notes[measureNumber - 1];
+      //console.log(`previousNote: ${previousNote?.toString()} | note: ${note?.toString()} | equals: ${previousNote?.equals(note)}`);
+      if (previousNote && note && previousNote.equals(note)) {
+        const noteY = ((pitchYInSemitones.treble as any)[note.toString()] as number) * unit - halfWholeNoteHeight;
+
+        this.renderTie(measureCenterX, noteY);
+      }
+    });
+  }
+
+  renderTie(x: number, y: number) {
+    const tieImage = this.add.image(x - 10, y - 20, "musical-symbols", "common-time.png").setOrigin(0);
+    tieImage.name = constants.terms.TIE;
+    this.mainContainer.add(tieImage);
+
+    return tieImage;
   }
 
   getNoteGameObjects(measureNumber?: number) {
@@ -374,6 +419,12 @@ export default class MainScene extends Phaser.Scene {
         return false;
 
       return !measureData.isCantusFirmus;
+    }) as Phaser.GameObjects.Image[];
+  }
+
+  getTieGameObjects() {
+    return this.mainContainer.list.filter(gameObject => {
+      return gameObject.name.includes(constants.terms.TIE);
     }) as Phaser.GameObjects.Image[];
   }
 

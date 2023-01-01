@@ -1,20 +1,21 @@
 What does alpha look like
-Do not approach the leading tone by leap
+	slide around screen, rotate
+
+
+
 
 Backlog
 -------
 Choose cantus firmus
-Tied notes validation is not working
 Penultimate measure has leading tone
 Leading tone is approached by step
 Measure numbers for tied notes
-Show tie
 Clicking a note removes it (do I need this for alpha?)
 Sound is awful
 
-
 Complete
 --------
+Show ties
 Measure numbers
 Dynamic measure width based on counterpoint length
 Highpoint
@@ -22,3 +23,5 @@ Do not cross voices
 First measure is 5 or 8, last measure is 1, 8
 Consecutive 3rds, 6ths, and 10ths
 High point validation is not working
+Do not approach the leading tone by leap
+Tied notes validation is not working
