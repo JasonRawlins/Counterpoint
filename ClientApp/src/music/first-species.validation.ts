@@ -1,4 +1,4 @@
-import { first } from "rxjs/operators";
+import { firstSpeciesValidation } from "rxjs/operators";
 import { Interval, Note } from "./core";
 import { Exercise } from "./counterpoint";
 
@@ -211,11 +211,13 @@ export function leadingToneIsApproachedByStep(exercise: Exercise) {
     return true;
   }
 
+  // TODO: Should I be using ScaleDegree.submediant enum here? That is from 1-7
+  // where as this is using 0-6b
   const cantusFirmusIsLeadingTone = secondToLastMeasureInterval.bottomNote.scaleIndex === 6;
   const counterpointIsLeadingTone = secondToLastMeasureInterval.topNote.scaleIndex === 6;
 
   if (counterpointIsLeadingTone
-    && (thirdToLastMeasureInterval.topNote.scaleIndex === 0
+    && (thirdToLastMeasureInterval.topNote.scaleIndex === 1
       || thirdToLastMeasureInterval.topNote.scaleIndex === 5
       || thirdToLastMeasureInterval.topNote.scaleIndex === 6)) {
       return true;
@@ -237,5 +239,46 @@ export function numberOfTiedNotesIsValid(exercise: Exercise) {
   });
 
   return measures.length <= 2;
+}
+
+const validMark = "<span class='rule-valid' _ngcontent-ng-cli-universal-c51>✓ </span>";
+const invalidMark = "<span class='rule-invalid' _ngcontent-ng-cli-universal-c51>X </span>";
+
+export function displayMultiMeasureValidation(preamble: string, selector: string, noErrorsMessage: string, validatedMeasures: number[]) {
+  const displayElement = document.getElementById(selector);
+  let validationMessage = preamble + " in measures ";
+  validatedMeasures.forEach(measureNumber => {
+    validationMessage += `(${measureNumber + 1} and ${measureNumber + 2}), `;
+  });
+
+  if (validatedMeasures.length > 0) {
+    displayElement!.innerHTML = invalidMark + validationMessage.substring(0, validationMessage.length - 2);
+  } else {
+    displayElement!.innerHTML = validMark + noErrorsMessage;
+  }
+}
+
+export function displaySingleMeasureValidation(preamble: string, selector: string, noErrorsMessage: string, validatedMeasures: number[], measureCountThreshold: number = 0) {
+  const displayElement = document.getElementById(selector);
+  let validationMessage = preamble + " in measure(s) ";
+  validatedMeasures.forEach(measureNumber => {
+    validationMessage += `${measureNumber + 1}, `;
+  });
+
+  if (validatedMeasures.length > measureCountThreshold) {
+    displayElement!.innerHTML = invalidMark + validationMessage.substring(0, validationMessage.length - 2);
+  } else {
+    displayElement!.innerHTML = validMark + noErrorsMessage;
+  }
+}
+
+export function displayMessageValidation(selector: string, validMessage: string, invalidMessage: string, isValid: boolean) {
+  const displayElement = document.getElementById(selector);
+  if (isValid) {
+    displayElement!.innerHTML = validMark + validMessage;
+  }
+  else {
+    displayElement!.innerHTML = invalidMark + invalidMessage;
+  }
 }
 

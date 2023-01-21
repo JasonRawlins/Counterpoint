@@ -2,7 +2,7 @@ import * as Phaser from "phaser";
 //import * as dat from "dat.gui";
 import { Exercise, Voice, VoicePosition } from "../music/counterpoint";
 import { Clef, Interval, Key, Note } from "../music/core";
-import * as validation from "../music/validation";
+import * as firstSpeciesValidation from "../music/first-species.validation";
 
 const screenSize = { width: 675, height: 200 };
 const wholeNoteHeight = 12; // The height of the whole note image in pixels. 
@@ -184,7 +184,7 @@ export default class MainScene extends Phaser.Scene {
     this.renderLedgerLines();
     this.renderMeasures();
     this.renderTies();
-    this.validateExercise();
+    this.displayFirstSpeciesValidation(this.exercise);
 
     //this.renderTransportControls();
 
@@ -264,13 +264,20 @@ export default class MainScene extends Phaser.Scene {
     const altoA4Line = this.createStaffLine(pitchYInSemitones.alto.a3, altoClefTopOffset);
     const altoF3Line = this.createStaffLine(pitchYInSemitones.alto.f3, altoClefTopOffset);
 
+    const selectNextCounterpointArrow = this.add.text(this.leftOffset, altoClefTopOffset + 18, "❱", {
+      fontFamily: "Times New Roman",
+      fontSize: "60px",
+      color: "#000000"
+    }).setOrigin(0);
+
     this.mainContainer.add([
       beginningBarLine,
       trebleClef,
       trebleF5Line, trebleD5Line, trebleB4Line, trebleG4Line, trebleE4Line,
       altoClef,
       altoG4Line, altoE4Line, altoC4Line, altoA4Line, altoF3Line,
-      endBarline1, endBarline2
+      endBarline1, endBarline2,
+      selectNextCounterpointArrow
     ]);
   }
 
@@ -372,7 +379,7 @@ export default class MainScene extends Phaser.Scene {
         //  this.mainContainer.add(this.renderTie(measureCenterX, pitchInPixels));
         //}
 
-        this.validateExercise();
+        this.displayFirstSpeciesValidation(this.exercise);
       });
     });
   }
@@ -480,61 +487,19 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
-  private validMark = "<span class='rule-valid' _ngcontent-ng-cli-universal-c51>✓ </span>";
-  private invalidMark = "<span class='rule-invalid' _ngcontent-ng-cli-universal-c51>X </span>";
-
-  displayMultiMeasureValidation = (preamble: string, selector: string, noErrorsMessage: string, validatedMeasures: number[]) => {
-    const displayElement = document.getElementById(selector);
-    let validationMessage = preamble + " in measures ";
-    validatedMeasures.forEach(measureNumber => {
-      validationMessage += `(${measureNumber + 1} and ${measureNumber + 2}), `;
-    });
-
-    if (validatedMeasures.length > 0) {
-      displayElement!.innerHTML = this.invalidMark + validationMessage.substring(0, validationMessage.length - 2);
-    } else {
-      displayElement!.innerHTML = this.validMark + noErrorsMessage;
-    }
-  }
-
-  displaySingleMeasureValidation = (preamble: string, selector: string, noErrorsMessage: string, validatedMeasures: number[], measureCountThreshold: number = 0) => {
-    const displayElement = document.getElementById(selector);
-    let validationMessage = preamble + " in measure(s) ";
-    validatedMeasures.forEach(measureNumber => {
-      validationMessage += `${measureNumber + 1}, `;
-    });
-
-    if (validatedMeasures.length > measureCountThreshold) {
-      displayElement!.innerHTML = this.invalidMark + validationMessage.substring(0, validationMessage.length - 2);
-    } else {
-      displayElement!.innerHTML = this.validMark + noErrorsMessage;
-    }
-  }
-
-  displayMessageValidation = (selector: string, validMessage: string, invalidMessage: string, isValid: boolean) => {
-    const displayElement = document.getElementById(selector);
-    if (isValid) {
-      displayElement!.innerHTML = this.validMark + validMessage;
-    }
-    else {
-      displayElement!.innerHTML = this.invalidMark + invalidMessage;
-
-    }
-  }
-
-  validateExercise() {
-    this.displayMultiMeasureValidation("Parallel octaves ", "parallel-octaves", "No parallel octaves", validation.getParallelOctaves(this.exercise));
-    this.displayMultiMeasureValidation("Hidden octaves ", "hidden-octaves", "No hidden octaves", validation.getHiddenOctaves(this.exercise));
-    this.displayMultiMeasureValidation("Parallel fifths ", "parallel-fifths", "No parallel fifths", validation.getParallelFifths(this.exercise));
-    this.displayMultiMeasureValidation("Hidden fifths ", "hidden-fifths", "No hidden fifths", validation.getHiddenFifths(this.exercise));
-    this.displaySingleMeasureValidation("Dissonant interval ", "dissonant-intervals", "No dissonant intervals", validation.getDissonantIntervals(this.exercise));
-    this.displaySingleMeasureValidation("Multiple high points ", "multiple-high-points", "Single high point", validation.getHighpoints(this.exercise), 1);
-    this.displaySingleMeasureValidation("Crossed voices ", "crossed-voices", "No crossed voices", validation.getCrossedVoices(this.exercise));
-    this.displayMessageValidation("first-measure-interval", "First measure interval is a unison, perfect fifth, or octave", "The interval in the first measure must be a unison, perfect fifth or octave", validation.firstMeasureIntervalIsValid(this.exercise));
-    this.displayMessageValidation("last-measure-interval", "Last measure interval is a unison or octave", "The interval in the last measure must be a unison or perfect octave", validation.lastMeasureIntervalIsValid(this.exercise));
-    this.displayMessageValidation("thirds-sixths-tenths", "No more than three consecutive thirds, sixths, or tenths", "There should be no more than three consecutive measures of thirds, sixths, or tenths", validation.numberOf3rds6ths10thsIsValid(this.exercise));
-    this.displayMessageValidation("leading-tone-approached-by-step", "The leading tone is approached by step", "The leading tone must be approached by step", validation.leadingToneIsApproachedByStep(this.exercise));
-    this.displayMessageValidation("tied-notes", "No more than two tied note per exercise", "There should be no more than two tied note in an exercise", validation.numberOfTiedNotesIsValid(this.exercise));
+  displayFirstSpeciesValidation(exercise: Exercise) {
+    firstSpeciesValidation.displayMultiMeasureValidation("Parallel octaves ", "parallel-octaves", "No parallel octaves", firstSpeciesValidation.getParallelOctaves(exercise));
+    firstSpeciesValidation.displayMultiMeasureValidation("Hidden octaves ", "hidden-octaves", "No hidden octaves", firstSpeciesValidation.getHiddenOctaves(exercise));
+    firstSpeciesValidation.displayMultiMeasureValidation("Parallel fifths ", "parallel-fifths", "No parallel fifths", firstSpeciesValidation.getParallelFifths(exercise));
+    firstSpeciesValidation.displayMultiMeasureValidation("Hidden fifths ", "hidden-fifths", "No hidden fifths", firstSpeciesValidation.getHiddenFifths(exercise));
+    firstSpeciesValidation.displaySingleMeasureValidation("Dissonant interval ", "dissonant-intervals", "No dissonant intervals", firstSpeciesValidation.getDissonantIntervals(exercise));
+    firstSpeciesValidation.displaySingleMeasureValidation("Multiple high points ", "multiple-high-points", "Single high point", firstSpeciesValidation.getHighpoints(exercise), 1);
+    firstSpeciesValidation.displaySingleMeasureValidation("Crossed voices ", "crossed-voices", "No crossed voices", firstSpeciesValidation.getCrossedVoices(exercise));
+    firstSpeciesValidation.displayMessageValidation("first-measure-interval", "First measure interval is a unison, perfect fifth, or octave", "The interval in the first measure must be a unison, perfect fifth or octave", firstSpeciesValidation.firstMeasureIntervalIsValid(exercise));
+    firstSpeciesValidation.displayMessageValidation("last-measure-interval", "Last measure interval is a unison or octave", "The interval in the last measure must be a unison or perfect octave", firstSpeciesValidation.lastMeasureIntervalIsValid(exercise));
+    firstSpeciesValidation.displayMessageValidation("thirds-sixths-tenths", "No more than three consecutive thirds, sixths, or tenths", "There should be no more than three consecutive measures of thirds, sixths, or tenths", firstSpeciesValidation.numberOf3rds6ths10thsIsValid(exercise));
+    firstSpeciesValidation.displayMessageValidation("leading-tone-approached-by-step", "The leading tone is approached by step", "The leading tone must be approached by step", firstSpeciesValidation.leadingToneIsApproachedByStep(exercise));
+    firstSpeciesValidation.displayMessageValidation("tied-notes", "No more than two tied note per exercise", "There should be no more than two tied note in an exercise", firstSpeciesValidation.numberOfTiedNotesIsValid(exercise));
   }
 
   renderDiagnosticsScreen() {

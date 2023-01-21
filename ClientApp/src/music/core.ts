@@ -230,7 +230,7 @@ export class Note implements Duration {
   midiNumber: MidiNumber;
   octave: number;
   scaleIndex: number;
-  length: number = 1; // For now, assume it's first species and a whole note. 
+  length = 1; 
 
   constructor(note: string) {
     const noteParts = note.split("");
@@ -272,7 +272,7 @@ export class Note implements Duration {
         return 1;
     }
 
-    // Both notes are the same octave now. 
+    // Both notes are the same octave now.
 
     if (this.scaleIndex < otherNote.scaleIndex)
       return -1;
@@ -283,10 +283,16 @@ export class Note implements Duration {
     // Both notes are the same scale index now.
 
     if (this.accidentalValue < otherNote.accidentalValue)
-      return -1
+      return -1;
 
     if (this.accidentalValue > otherNote.accidentalValue)
-      return 1
+      return 1;
+
+    if (this.length < otherNote.length)
+      return -1;
+
+    if (this.length > otherNote.length)
+      return 1;
 
     return 0;
   }

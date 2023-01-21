@@ -1,5 +1,5 @@
 ﻿import { Interval, Note } from "./core";
-import * as validation from "./validation";
+import * as validation from "./first-species.validation";
 import { createExercise } from "./test-helper";
 
 describe("Intervals", () => {
