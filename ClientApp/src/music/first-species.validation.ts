@@ -250,6 +250,22 @@ export function numberOfTiedNotesIsValid(exercise: Exercise) {
   return measures.length <= 2;
 }
 
+export function lengthOfTiedNotesIsValid(exercise: Exercise) {
+  let measures: number[] = [];
+
+  exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
+    const thisNote = exercise.counterpoint.note(measureNumber);
+    const nextNote = exercise.counterpoint.note(measureNumber + 1);
+    const nextNextNote = exercise.counterpoint.note(measureNumber + 2);
+
+    if (thisNote && nextNote && nextNextNote && thisNote.equals(nextNote) && thisNote.equals(nextNextNote)) {
+      measures.push(measureNumber);
+    }
+  });
+
+  return measures.length === 0;
+}
+
 const validMark = "<span class='rule-valid' _ngcontent-ng-cli-universal-c51>✓ </span>";
 const invalidMark = "<span class='rule-invalid' _ngcontent-ng-cli-universal-c51>X </span>";
 

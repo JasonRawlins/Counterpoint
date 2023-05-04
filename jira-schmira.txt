@@ -2,7 +2,8 @@
 Favicon
 Clear button
 Disallow multiple ties in a row
-
+Clicking on a note should remove it
+Remove boilerplate "Home", "Counter", and "Fetch Data"
 
 
 

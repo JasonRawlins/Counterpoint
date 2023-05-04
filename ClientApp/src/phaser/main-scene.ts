@@ -512,6 +512,7 @@ export default class MainScene extends Phaser.Scene {
     firstSpeciesValidation.displayMessageValidation("thirds-sixths-tenths", "No more than three consecutive thirds, sixths, or tenths", "There should be no more than three consecutive measures of thirds, sixths, or tenths", firstSpeciesValidation.numberOf3rds6ths10thsIsValid(exercise));
     firstSpeciesValidation.displayMessageValidation("leading-tone-approached-by-step", "The leading tone is approached by step", "The leading tone must be approached by step", firstSpeciesValidation.leadingToneIsApproachedByStep(exercise));
     firstSpeciesValidation.displayMessageValidation("tied-notes", "No more than two tied note per exercise", "There should be no more than two tied note in an exercise", firstSpeciesValidation.numberOfTiedNotesIsValid(exercise));
+    firstSpeciesValidation.displayMessageValidation("extended-tied-notes", "Tie durations do not exceed two notes", "Tied notes should not have a duration longer than two notes", firstSpeciesValidation.lengthOfTiedNotesIsValid(exercise));
   }
 
   renderDiagnosticsScreen() {
