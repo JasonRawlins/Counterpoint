@@ -123,10 +123,17 @@ export default class MainScene extends Phaser.Scene {
   //private feedbackText!: Phaser.GameObjects.Text;
   //private ghostNoteImage!: Phaser.GameObjects.Image;
 
+  private cantusFirmi = [
+    ""
+  ];
+
   private exercise = new Exercise(Key.c,
     new Voice(VoicePosition.bottom, Clef.alto, "c4 d4 e4 f4 g4 d4 f4 e4 d4 c4", true),
-    new Voice(VoicePosition.top, Clef.treble, "c5 a4 a4 a4 b4 g4 a4 c5 b4 c5")
+    new Voice(VoicePosition.top, Clef.treble, "")
   );
+
+    //this.exercise.cantusFirmus = new Voice(VoicePosition.bottom, Clef.alto, "", true);
+
 
   private measureLeftOffset = 70;
   private measureWidth = (screenSize.width - this.measureLeftOffset) / this.exercise.length;
@@ -180,6 +187,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.mainContainer = this.add.container(0, 0);
 
+    this.renderHeadsUpDisplay();
     this.renderGrandStaff();
     this.renderLedgerLines();
     this.renderMeasures();
@@ -193,7 +201,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   renderTransportControls() {
-    const playButton = this.add.triangle(style.padding.left, 30 * unit, 0, 0, 50, 25, 0, 50, 0x00FF00).setOrigin(0);
+
+    const playButton = this.add.triangle(style.padding.left, 30 * unit, 0, 0, 50, 25, 0, 50, 0x000000).setOrigin(0);
     playButton.setInteractive();
     playButton.on("pointerdown", () => {
       let measureNumber = 0;
@@ -219,6 +228,10 @@ export default class MainScene extends Phaser.Scene {
     this.renderLedgerLines();
     //this.renderMeasures();
     this.renderTies();
+  }
+
+  public renderHeadsUpDisplay() {
+
   }
 
   renderGrandStaff() {
@@ -264,11 +277,11 @@ export default class MainScene extends Phaser.Scene {
     const altoA4Line = this.createStaffLine(pitchYInSemitones.alto.a3, altoClefTopOffset);
     const altoF3Line = this.createStaffLine(pitchYInSemitones.alto.f3, altoClefTopOffset);
 
-    const selectNextCounterpointArrow = this.add.text(this.leftOffset, altoClefTopOffset + 18, "❱", {
-      fontFamily: "Times New Roman",
-      fontSize: "60px",
-      color: "#000000"
-    }).setOrigin(0);
+    //const selectNextCounterpointArrow = this.add.text(this.leftOffset, altoClefTopOffset + 18, "❱", {
+    //  fontFamily: "Times New Roman",
+    //  fontSize: "60px",
+    //  color: "#000000"
+    //}).setOrigin(0);
 
     this.mainContainer.add([
       beginningBarLine,
@@ -276,8 +289,7 @@ export default class MainScene extends Phaser.Scene {
       trebleF5Line, trebleD5Line, trebleB4Line, trebleG4Line, trebleE4Line,
       altoClef,
       altoG4Line, altoE4Line, altoC4Line, altoA4Line, altoF3Line,
-      endBarline1, endBarline2,
-      selectNextCounterpointArrow
+      endBarline1, endBarline2
     ]);
   }
 

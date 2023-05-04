@@ -6,13 +6,13 @@ export enum IntervalConstant {
 }
 
 export enum ScaleDegree {
-  tonic = 1,
-  supertonic = 2,
-  mediant = 3,
-  subdominant = 4,
-  dominant = 5,
-  submediant = 6,
-  leadingTone = 7
+  tonic = 0,
+  supertonic = 1,
+  mediant = 2,
+  subdominant = 3,
+  dominant = 4,
+  submediant = 5,
+  leadingTone = 6
 }
 
 export enum ClefType {

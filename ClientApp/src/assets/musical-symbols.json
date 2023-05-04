@@ -5,197 +5,50 @@
 			"format": "RGBA8888",
 			"size": {
 				"w": 63,
-				"h": 405
+				"h": 254
 			},
 			"scale": 1,
 			"frames": [
 				{
-					"filename": "natural.png",
+					"filename": "tie.png",
 					"rotated": false,
-					"trimmed": false,
+					"trimmed": true,
 					"sourceSize": {
-						"w": 9,
-						"h": 34
+						"w": 63,
+						"h": 10
 					},
 					"spriteSourceSize": {
-						"x": 0,
+						"x": 1,
 						"y": 0,
-						"w": 9,
-						"h": 34
+						"w": 61,
+						"h": 10
 					},
 					"frame": {
-						"x": 0,
-						"y": 0,
-						"w": 9,
-						"h": 34
-					}
-				},
-				{
-					"filename": "flat.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 11,
-						"h": 31
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 11,
-						"h": 31
-					},
-					"frame": {
-						"x": 9,
-						"y": 0,
-						"w": 11,
-						"h": 31
-					}
-				},
-				{
-					"filename": "sharp.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 11,
-						"h": 35
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 11,
-						"h": 35
-					},
-					"frame": {
-						"x": 20,
-						"y": 0,
-						"w": 11,
-						"h": 35
-					}
-				},
-				{
-					"filename": "whole-rest.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 14,
-						"h": 5
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 14,
-						"h": 5
-					},
-					"frame": {
-						"x": 31,
-						"y": 0,
-						"w": 14,
-						"h": 5
-					}
-				},
-				{
-					"filename": "common-time.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 21,
-						"h": 25
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 21,
-						"h": 25
-					},
-					"frame": {
-						"x": 0,
-						"y": 35,
-						"w": 21,
-						"h": 25
+						"x": 1,
+						"y": 1,
+						"w": 61,
+						"h": 10
 					}
 				},
 				{
 					"filename": "grand-staff-brace.png",
 					"rotated": false,
-					"trimmed": false,
+					"trimmed": true,
 					"sourceSize": {
 						"w": 21,
 						"h": 240
 					},
 					"spriteSourceSize": {
-						"x": 0,
+						"x": 1,
 						"y": 0,
-						"w": 21,
+						"w": 20,
 						"h": 240
 					},
 					"frame": {
-						"x": 21,
-						"y": 35,
-						"w": 21,
+						"x": 1,
+						"y": 13,
+						"w": 20,
 						"h": 240
-					}
-				},
-				{
-					"filename": "whole-note.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 21,
-						"h": 12
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 21,
-						"h": 12
-					},
-					"frame": {
-						"x": 42,
-						"y": 35,
-						"w": 21,
-						"h": 12
-					}
-				},
-				{
-					"filename": "treble-clef.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 31,
-						"h": 82
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 31,
-						"h": 82
-					},
-					"frame": {
-						"x": 0,
-						"y": 275,
-						"w": 31,
-						"h": 82
-					}
-				},
-				{
-					"filename": "alto-clef.png",
-					"rotated": false,
-					"trimmed": false,
-					"sourceSize": {
-						"w": 32,
-						"h": 52
-					},
-					"spriteSourceSize": {
-						"x": 0,
-						"y": 0,
-						"w": 32,
-						"h": 52
-					},
-					"frame": {
-						"x": 31,
-						"y": 275,
-						"w": 32,
-						"h": 52
 					}
 				},
 				{
@@ -213,31 +66,115 @@
 						"h": 38
 					},
 					"frame": {
-						"x": 0,
-						"y": 357,
+						"x": 23,
+						"y": 13,
 						"w": 33,
 						"h": 38
 					}
 				},
 				{
-					"filename": "tie.png",
+					"filename": "alto-clef.png",
 					"rotated": false,
 					"trimmed": false,
 					"sourceSize": {
-						"w": 63,
-						"h": 10
+						"w": 32,
+						"h": 52
 					},
 					"spriteSourceSize": {
 						"x": 0,
 						"y": 0,
-						"w": 63,
-						"h": 10
+						"w": 32,
+						"h": 52
 					},
 					"frame": {
+						"x": 23,
+						"y": 53,
+						"w": 32,
+						"h": 52
+					}
+				},
+				{
+					"filename": "treble-clef.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 31,
+						"h": 82
+					},
+					"spriteSourceSize": {
 						"x": 0,
-						"y": 395,
-						"w": 63,
-						"h": 10
+						"y": 0,
+						"w": 31,
+						"h": 82
+					},
+					"frame": {
+						"x": 23,
+						"y": 107,
+						"w": 31,
+						"h": 82
+					}
+				},
+				{
+					"filename": "common-time.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 21,
+						"h": 25
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 21,
+						"h": 25
+					},
+					"frame": {
+						"x": 23,
+						"y": 191,
+						"w": 21,
+						"h": 25
+					}
+				},
+				{
+					"filename": "whole-rest.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 14,
+						"h": 5
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 14,
+						"h": 5
+					},
+					"frame": {
+						"x": 46,
+						"y": 191,
+						"w": 14,
+						"h": 5
+					}
+				},
+				{
+					"filename": "whole-note.png",
+					"rotated": false,
+					"trimmed": false,
+					"sourceSize": {
+						"w": 21,
+						"h": 12
+					},
+					"spriteSourceSize": {
+						"x": 0,
+						"y": 0,
+						"w": 21,
+						"h": 12
+					},
+					"frame": {
+						"x": 23,
+						"y": 218,
+						"w": 21,
+						"h": 12
 					}
 				}
 			]
@@ -246,6 +183,6 @@
 	"meta": {
 		"app": "https://www.codeandweb.com/texturepacker",
 		"version": "3.0",
-		"smartupdate": "$TexturePacker:SmartUpdate:403d09b7ddb449bb7f4a1baa1118d3c5:7450bba4f052bedcfece69b26a2a55c4:3e154cf9e9e8a312306f5b6c518e3b5b$"
+		"smartupdate": "$TexturePacker:SmartUpdate:06cb43c83da15776daec1f9a962ed24f:7d2a329a154652bbd8f7293db921fd14:3e154cf9e9e8a312306f5b6c518e3b5b$"
 	}
 }

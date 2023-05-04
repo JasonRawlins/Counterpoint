@@ -1,5 +1,5 @@
 import { firstSpeciesValidation } from "rxjs/operators";
-import { Interval, Note } from "./core";
+import { Interval, Note, ScaleDegree } from "./core";
 import { Exercise } from "./counterpoint";
 
 export function getDissonantIntervals(exercise: Exercise) {
@@ -57,7 +57,7 @@ export function getHiddenOctaves(exercise: Exercise) {
 function getHiddenPerfects(exercise: Exercise, intervalValue: number) {
   const measures: number[] = [];
 
-  exercise.cantusFirmus.notes.forEach((note, measureNumber) => {
+  exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
     if (measureNumber + 1 < exercise.cantusFirmus.notes.length) {
       const firstInterval = exercise.intervalAt(measureNumber);
       const secondInterval = exercise.intervalAt(measureNumber + 1);
@@ -117,7 +117,7 @@ export function getOctaves(exercise: Exercise) {
 function getIntervals(exercise: Exercise, intervalValue: number) {
   const measures: number[] = [];
 
-  exercise.cantusFirmus.notes.forEach((note, measureNumber) => {
+  exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
     const interval = exercise.intervalAt(measureNumber);
 
     if (interval !== null) {
@@ -142,7 +142,7 @@ export function getHighpoints(exercise: Exercise) {
   let highpoints: number[] = [];
 
   let highNote = new Note("a0");
-  // Octave and letter and accidental
+
   exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
     const counterpointNote = exercise.counterpoint.notes[measureNumber];
     if (counterpointNote?.isHigherThan(highNote)) {
@@ -152,7 +152,8 @@ export function getHighpoints(exercise: Exercise) {
 
   exercise.cantusFirmus.notes.forEach((cantusFirmusNote, measureNumber) => {
     const counterpointNote = exercise.counterpoint.notes[measureNumber];
-    if (counterpointNote?.equals(highNote)) {
+    const possibleTiedCounterpointNote = exercise.counterpoint.notes[measureNumber - 1];
+    if (counterpointNote?.equals(highNote) && !counterpointNote?.equals(possibleTiedCounterpointNote)) {
       highpoints.push(measureNumber);
     }
   });
@@ -174,11 +175,19 @@ export function getCrossedVoices(exercise: Exercise) {
 }
 
 export function firstMeasureIntervalIsValid(exercise: Exercise) {
+  if (exercise.intervalAt(0) === null) {
+    return true;
+  }
+
   return (exercise.intervalAt(0)?.isFifth() || exercise.intervalAt(0)?.isOctave()) || false;
 }
 
 export function lastMeasureIntervalIsValid(exercise: Exercise) {
   const lastMeasureInterval = exercise.intervalAt(exercise.length - 1);
+  if (lastMeasureInterval === null) {
+    return true;
+  }
+
   return (lastMeasureInterval?.isUnison() || lastMeasureInterval?.isOctave()) || false;
 }
 
@@ -211,15 +220,15 @@ export function leadingToneIsApproachedByStep(exercise: Exercise) {
     return true;
   }
 
-  // TODO: Should I be using ScaleDegree.submediant enum here? That is from 1-7
-  // where as this is using 0-6b
-  const cantusFirmusIsLeadingTone = secondToLastMeasureInterval.bottomNote.scaleIndex === 6;
-  const counterpointIsLeadingTone = secondToLastMeasureInterval.topNote.scaleIndex === 6;
+  if (secondToLastMeasureInterval.topNote.scaleIndex !== ScaleDegree.leadingTone) {
+    return false;
+  }
 
-  if (counterpointIsLeadingTone
-    && (thirdToLastMeasureInterval.topNote.scaleIndex === 1
-      || thirdToLastMeasureInterval.topNote.scaleIndex === 5
-      || thirdToLastMeasureInterval.topNote.scaleIndex === 6)) {
+  const counterpointNoteIsTonic = thirdToLastMeasureInterval.topNote.scaleIndex === ScaleDegree.tonic;
+  const counterpointNoteIsSubmediant = thirdToLastMeasureInterval.topNote.scaleIndex === ScaleDegree.submediant;
+  const counterpointNoteIsLeadingTone = thirdToLastMeasureInterval.topNote.scaleIndex === ScaleDegree.leadingTone;
+
+  if (counterpointNoteIsTonic || counterpointNoteIsSubmediant || counterpointNoteIsLeadingTone) {
       return true;
   }
 

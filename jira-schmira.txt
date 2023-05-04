@@ -1,7 +1,7 @@
-What does alpha look like
-	slide around screen, rotate
 
-Use correct image for ties
+Favicon
+Clear button
+Disallow multiple ties in a row
 
 
 
@@ -10,13 +10,12 @@ Backlog
 -------
 Choose cantus firmus
 Penultimate measure has leading tone
-Leading tone is approached by step
-Measure numbers for tied notes
-Clicking a note removes it (do I need this for alpha?)
-Sound is awful
+Leading tone is approached by step (not 12th or 10th)
 
 Complete
 --------
+A tied high point is being seen as multiple high points
+Use correct image for ties
 Show ties
 Measure numbers
 Dynamic measure width based on counterpoint length
